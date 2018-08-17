@@ -1,0 +1,62 @@
+<div class="products">
+
+  <div class="action-bar text-right">
+    <button type="button" onclick="F1.modal.show('#add-product', event)">+ Add Product</button>
+  </div>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Code</th>
+        <th>Name</th>
+        <th>Description</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <?php foreach ($model->listProducts() as $product): ?>
+      <tr>
+        <td><?=$product->code?></td>
+        <td><?=$product->name?></td>
+        <td><?=$product->description?></td>
+        <td><a class="pagelink" href="products/product/edit?id=<?=$product->id?>">Edit Product</a></td>
+      </tr>
+      <?php endforeach; ?>
+    </tbody>
+  </table>
+  
+  <!-- ADD PRODUCT MODAL -->
+  <div id="add-product" class="modal hidden">
+    <form method="POST" class="pjax">
+      <div class="modal-inner">
+        <header>
+          <a class="modal-close" href="#" onclick="F1.modal.dismiss(this, event)">Close X</a>
+        </header>
+        <br>
+        <div class="modal-content">
+          <fieldset>
+            <legend>New Product</legend>
+            <div class="form-field">
+              <label>Product Code</label>
+              <input name="product[code]" value="" type="text">
+            </div>
+            <div class="form-field">
+              <label>Product Name</label>
+              <input name="product[name]" value="" type="text">
+            </div>
+            <div class="form-field">
+              <label>Product Description</label>
+              <textarea name="product[description]" rows="2"></textarea>
+            </div>            
+          </fieldset>          
+        </div>
+        <br>
+        <footer>
+          <div class="buttons-bar">
+            <button type="submit" name="add-product">Add new product</button>
+          </div>
+        </footer>
+      </form>
+    </div>
+  </div>
+  
+</div>

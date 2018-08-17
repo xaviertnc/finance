@@ -18,10 +18,18 @@ F1.Modal = function (options)
 };
 
 
+F1.Modal.prototype.show = function(modalSelector, event)
+{
+  event.preventDefault();
+  $(modalSelector).removeClass('hidden').find(':input').first().focus();
+  return false;
+};
+
+
 F1.Modal.prototype.dismiss = function(elm, event)
 {
   event.preventDefault();
-  $(elm).parents('.modal:first').toggle('hidden');
+  $(elm).parents('.modal:first').addClass('hidden');
   return false;
 };
 

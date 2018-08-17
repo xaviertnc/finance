@@ -1,0 +1,57 @@
+<div class="suppliers">
+
+  <div class="action-bar text-right">
+    <button type="button" onclick="F1.modal.show('#add-supplier', event)">+ Add Supplier</button>
+  </div>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Acc No.</th>
+        <th>Name</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <?php foreach ($suppliers as $supplier): ?>
+      <tr>
+        <td><?=$supplier->supplier_no?></td>
+        <td><?=$supplier->name?></td>
+        <td><a class="pagelink" href="suppliers/supplier/edit?id=<?=$supplier->id?>">Edit Supplier</a></td>
+      </tr>
+      <?php endforeach; ?>
+      <?php if (empty($suppliers)):?><tr><td colspan="3">- None -</td></tr><?php endif; ?>
+    </tbody>
+  </table>
+  
+  <!-- ADD CLIENT MODAL -->
+  <div id="add-supplier" class="modal hidden">
+    <form method="POST" class="pjax">
+      <div class="modal-inner">
+        <header>
+          <a class="modal-close" href="#" onclick="F1.modal.dismiss(this, event)">Close X</a>
+        </header>
+        <br>
+        <div class="modal-content">
+          <fieldset>
+            <legend>New Supplier</legend>
+            <div class="form-field">
+              <label>Supplier No.</label>
+              <input name="supplier[supplier_no]" value="" type="text">
+            </div>
+            <div class="form-field">
+              <label>Supplier Name</label>
+              <input name="supplier[name]" value="" type="text">
+            </div>
+          </fieldset>          
+        </div>
+        <br>
+        <footer>
+          <div class="buttons-bar">
+            <button type="submit" name="add-supplier">Add new supplier</button>
+          </div>
+        </footer>
+      </form>
+    </div>
+  </div>
+  
+</div>

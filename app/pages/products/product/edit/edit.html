@@ -1,0 +1,21 @@
+<div class="product">
+  <form class="pjax" method="POST">
+    <fieldset>
+      <div class="form-field">
+        <label>Product Code</label>
+        <input name="product[code]" value="<?=$product->code?>" type="text" autofocus>
+      </div>
+      <div class="form-field">
+        <label>Product Name</label>
+        <input name="product[name]" value="<?=$product->name?>" type="text">
+      </div>
+      <div class="form-field">
+        <label>Product Description</label>
+        <textarea name="product[description]" rows="2"><?=$product->description?></textarea>
+      </div>
+      <div class="buttons-bar">
+        <button type="submit" name="update-product">Update product</button>
+      </div>      
+    </fieldset>
+  </form>
+</div>

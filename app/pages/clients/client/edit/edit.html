@@ -1,0 +1,74 @@
+<div class="client">
+  <form class="pjax" method="POST">
+    <fieldset>
+      <div class="form-field">
+        <label>Account No.</label>
+        <input name="client[acc_no]" value="<?=$client->acc_no?>" type="text">
+      </div>
+      <div class="form-field">
+        <label>Company Name</label>
+        <input name="client[name]" value="<?=$client->name?>" type="text">
+      </div>
+      <div class="buttons-bar">
+        <button type="submit" name="update-client">Update client</button>
+      </div>
+    </fieldset>
+    <br>
+    <div class="action-bar text-right">
+      <button type="button" onclick="F1.modal.show('#add-package', event)">+ Add Package</button>
+    </div>    
+    <fieldset>
+      <legend>Client Packages</legend>
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Description</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <?php foreach ($packages as $package): ?>
+          <tr>
+            <td><?=$package->name?></td>
+            <td><?=$package->description?></td>
+            <td><a class="pagelink" href="clients/packages/package/edit?client=<?=$client_id?>&amp;id=<?=$package->id?>">Edit Package</a></td>
+          </tr>
+          <?php endforeach; ?>
+          <?php if (empty($packages)):?><tr><td colspan="3">- None -</td></tr><?php endif; ?>
+        </tbody>
+      </table>      
+    </fieldset>    
+  </form>
+  
+  <!-- ADD CLIENT PACKAGE MODAL -->
+  <div id="add-package" class="modal hidden">
+    <form method="POST" class="pjax">
+      <div class="modal-inner">
+        <header>
+          <a class="modal-close" href="#" onclick="F1.modal.dismiss(this, event)">Close X</a>
+        </header>
+        <br>
+        <div class="modal-content">
+          <fieldset>
+            <legend>Add New Client Package</legend>
+            <div class="form-field">
+              <label>Package Name</label>
+              <input name="package[name]" value="" type="text">
+            </div>
+            <div class="form-field">
+              <label>Package Description</label>
+              <textarea name="package[description]" rows="2"></textarea>
+            </div>
+          </fieldset>          
+        </div>
+        <br>
+        <footer>
+          <div class="buttons-bar">
+            <button type="submit" name="add-package">Add package</button>
+          </div>
+        </footer>
+      </form>
+    </div>
+  </div>  
+</div>

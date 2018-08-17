@@ -1,7 +1,7 @@
 <?php
 
   $page = new stdClass();
-  $page->title = 'Home';
+  $page->title = 'Error 404';
   $page->dir = $app->controllerPath;
   $page->id = 'page_' . $app->currentPage;
   $page->state = $app->session->get($page->id, []);
@@ -9,7 +9,6 @@
   $page->alerts = $app->session->get('alerts', []);
   $page->lastCsrfToken = $app->session->get('csrfToken');
   $page->basename = substr(__FILE__, 0, strlen(__FILE__)-4);
-  $page->modelFilePath = $page->basename . '.model.php';
   $page->viewFilePath = $page->basename . '.html';
   $page->csrfToken = md5(uniqid(rand(), true)); //time();
 

@@ -63,6 +63,9 @@ $(document).ready(function start() {
       F1.afterPageLoadScripts = [];
       F1.pjax.bindViewports();
       F1.alerts.bind();
+    },
+    pageHasUnsavedChanges: function () {
+      return false;
     }
   });
 

@@ -3,10 +3,9 @@
 
 window.F1 = window.F1 || { afterPageLoadScripts: [] };
 
+F1.clients = {};
 
-F1.afterPageLoadScripts.push(function initPage1()
+F1.afterPageLoadScripts.push(function initClients()
 {
-
-  F1.console.log('This is AFTER Page 1 loaded succesfully!');
-
+  F1.console.log('This is AFTER Client loaded succesfully!');
 });

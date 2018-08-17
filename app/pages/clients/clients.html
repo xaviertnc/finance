@@ -1,0 +1,56 @@
+<div class="clients">
+
+  <div class="action-bar text-right">
+    <button type="button" onclick="F1.modal.show('#add-client', event)">+ Add Client</button>
+  </div>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Acc No.</th>
+        <th>Name</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <?php foreach ($model->listClients() as $client): ?>
+      <tr>
+        <td><?=$client->acc_no?></td>
+        <td><?=$client->name?></td>
+        <td><a class="pagelink" href="clients/client/edit?id=<?=$client->id?>">Edit Client</a></td>
+      </tr>
+      <?php endforeach; ?>
+    </tbody>
+  </table>
+  
+  <!-- ADD CLIENT MODAL -->
+  <div id="add-client" class="modal hidden">
+    <form method="POST" class="pjax">
+      <div class="modal-inner">
+        <header>
+          <a class="modal-close" href="#" onclick="F1.modal.dismiss(this, event)">Close X</a>
+        </header>
+        <br>
+        <div class="modal-content">
+          <fieldset>
+            <legend>New Client</legend>
+            <div class="form-field">
+              <label>Account No.</label>
+              <input name="client[acc_no]" value="" type="text">
+            </div>
+            <div class="form-field">
+              <label>Company Name</label>
+              <input name="client[name]" value="" type="text">
+            </div>
+          </fieldset>          
+        </div>
+        <br>
+        <footer>
+          <div class="buttons-bar">
+            <button type="submit" name="add-client">Add new client</button>
+          </div>
+        </footer>
+      </form>
+    </div>
+  </div>
+  
+</div>

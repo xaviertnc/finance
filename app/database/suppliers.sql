@@ -1,0 +1,22 @@
+DROP TABLE IF EXISTS `suppliers`;
+CREATE TABLE `suppliers` (
+  `id` int(11) NOT NULL,
+  `type_id` int(11) DEFAULT NULL,
+  `status_id` int(11) DEFAULT NULL,
+  `client_no` varchar(35) DEFAULT NULL,
+  `company_name` varchar(65) DEFAULT NULL,
+  `contact_firstname` varchar(35) DEFAULT NULL,
+  `contact_lastname` varchar(35) DEFAULT NULL,
+  `tel` varchar(20) DEFAULT NULL,
+  `cell` int(20) DEFAULT NULL,
+  `email` varchar(255) DEFAULT NULL,
+  `website` varchar(255) DEFAULT NULL,
+  `joined_at` datetime DEFAULT NULL,
+  `terminated_at` datetime DEFAULT NULL,
+  `created_at` timestamp NOT NULL,
+  `created_by` int(11) NOT NULL,
+  `updated_at` datetime NOT NULL,
+  `updated_by` int(11) NOT NULL,
+  `deleted_at` datetime NOT NULL,
+  `deleted_by` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;

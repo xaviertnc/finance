@@ -1,21 +1,24 @@
 <?php
 
+  DB::connect($app->dbConnection);
+  
   $page = new stdClass();
-  $page->title = 'Home';
+  $page->title = 'Suppliers';
   $page->dir = $app->controllerPath;
-  $page->id = 'page_' . $app->currentPage;
+  $page->id = 'page_' . $app->currentPage;  
   $page->state = $app->session->get($page->id, []);
   $page->errors = $app->session->get('errors', []);
   $page->alerts = $app->session->get('alerts', []);
   $page->lastCsrfToken = $app->session->get('csrfToken');
   $page->basename = substr(__FILE__, 0, strlen(__FILE__)-4);
-  $page->modelFilePath = $page->basename . '.model.php';
+  $page->modelFilePath = $page->dir . '/model.php';
   $page->viewFilePath = $page->basename . '.html';
   $page->csrfToken = md5(uniqid(rand(), true)); //time();
 
   $app->page = $page;
+  
 
-
+  
   // ----------------------
   // -------- POST --------
   // ----------------------
@@ -31,25 +34,49 @@
 
       $alerts[] = ['info', 'Hey, you posted some data.', 3000];
 
-    } while (0);
+      if ($request->action == 'add-supplier') {
+        DB::insertInto('suppliers', array_get($_POST, 'supplier'));
+        $alerts[] = ['success', 'Congrats on a nice new supplier!', 5000];
+        break;
+      }
 
-    $page->state['errors'] = $errors;
-    $page->state['alerts'] = $alerts;
-    $app->state[$page->id] = $page->state;
+      if ($request->action == 'delete-item') {
+        $alerts[] = ['danger', 'Aaww! You just deleted little Timmy #' . $request->params .' :-(', 0];
+        break;
+      }
+
+    } while (0);
+    
+    // FLASH Messages
+    $app->session->put('errors', $errors);
+    $app->session->put('alerts', $alerts);
+    
     $response->redirectTo = $request->back ?: $request->uri;
   }
 
 
+  
   // ----------------------
   // -------- GET ---------
   // ----------------------
   else {
 
+    // Get Model
+    include $page->modelFilePath;
+    $model = new SuppliersModel();
+    $suppliers = $model->listSuppliers();
+    
+    // Get View
     include $app->partialsPath . '/head.html';
     include $view->partialFile($app->page->dir, $app->page->viewFilePath, 'html', 3, null, '        ');
     include $app->partialsPath . '/foot.html';
 
-    // Save the APP-STATE before we exit.
-    $app->session->flash('csrfToken', $page->csrfToken);
+    // Save the APP and PAGE state before exit.
+    $app->session->put('csrfToken', $page->csrfToken);
     $app->session->put($page->id, $page->state);
+
+    // Remove FLASHED messages
+    $app->session->forget('errors');
+    $app->session->forget('alerts');
+
   }

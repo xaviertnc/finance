@@ -1,6 +1,7 @@
 fieldset { padding: 1em; }
 
 #page-header .titlebar { background-color: black; color: white; padding: 1em; }
+#page-header .titlebar a:visited { color: moccasin; }
 
 #page-header .nav { padding: 1em; margin: 0; }
 #page-header .nav li { display: inline-block; margin: 0; padding: 0.3em; border: 1px solid gainsboro; }
@@ -31,7 +32,7 @@ fieldset { padding: 1em; }
 
 #page-content { padding: 1em; position: relative; }
 
-#page-footer { background-color: gainsboro; padding: 1em; }
+#page-footer { background-color: gainsboro; font-size: 0.9em; padding: 1em; }
 
 .pjax-error h3 { color: red; }
 
@@ -68,6 +69,12 @@ fieldset { padding: 1em; }
   color: royalblue;
 }
 
+#alerts .warning {
+  background-color: beige;
+  border-color: goldenrod;
+  color: darkgoldenrod;
+}
+
 #alerts .success {
   background-color: mintcream;
   border-color: green;
@@ -102,10 +109,17 @@ label {
   vertical-align: top;
 }
 
+textarea { min-width: 280px; }
 
 .field { margin: 1em 0; }
 
 .form-actions-bar { padding: 1em 0 0; }
+
+.pull-left { float: left; }
+.pull-right { float: right; }
+
+.text-left { text-align: left; }
+.text-right { text-align: right; }
 
 @media (max-width:580px) {
   label { display: block; }

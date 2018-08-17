@@ -3,10 +3,9 @@
 
 window.F1 = window.F1 || { afterPageLoadScripts: [] };
 
+F1.products = {};
 
-F1.afterPageLoadScripts.push(function initPage1()
+F1.afterPageLoadScripts.push(function initProducts()
 {
-
-  F1.console.log('This is AFTER Page 1 loaded succesfully!');
-
+  F1.console.log('This is AFTER Products loaded succesfully!');
 });

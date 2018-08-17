@@ -52,8 +52,12 @@ F1.Pjax = function (options)
   $.extend(this, options);
 
   this.history = this.history || window.history;
+  
   window.onpopstate = this.popStateHandler.bind(this);
-  window.onbeforeunload = this.beforePageExit.bind(this);
+  
+  if (this.pageHasUnsavedChanges() !== false) {
+    window.onbeforeunload = this.beforePageExit.bind(this);
+  }
 
   this.viewports = this.setupViewports(options.viewports);
 

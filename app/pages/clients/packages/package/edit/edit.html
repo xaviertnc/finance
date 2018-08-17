@@ -1,0 +1,77 @@
+<div class="client">
+  <form class="pjax" method="POST">
+    <fieldset>
+      <div class="form-field">
+        <label>Package Name</label>
+        <input name="package[name]" value="<?=$package->name?>" type="text">
+      </div>
+      <div class="form-field">
+        <label>Package Description</label>
+        <textarea name="package[description]" rows="2"><?=$package->description?></textarea>
+      </div>
+      <div class="buttons-bar">
+        <button type="submit" name="update-package">Update client package</button>
+      </div>
+    </fieldset>
+    <br>
+    <div class="action-bar text-right">
+      <button type="button" onclick="F1.modal.show('#add-package-item', event)">+ Add Package Item</button>
+    </div>    
+    <fieldset>
+      <legend>Client Package Items</legend>
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Item Code</th>
+            <th>Description</th>
+            <th>Notes</th>
+          </tr>
+        </thead>
+        <tbody>
+          <?php foreach ($packageItems as $item): ?>
+          <tr>
+            <td><?=$item->shortcode?></td>
+            <td><?=$item->description?></td>
+            <td><?=$item->notes?></td>
+            <td><a class="pagelink" href="clients_package_items/edit?id=<?=$item->id?>">Edit Package Item</a></td>
+          </tr>
+          <?php endforeach; ?>
+          <?php if (empty($packageItems)):?>
+          <tr><td colspan="4">- None -</td></tr>
+          <?php endif; ?>
+        </tbody>
+      </table>      
+    </fieldset>    
+  </form>
+  
+  <!-- ADD PACKAGE ITEM MODAL -->
+  <div id="add-package-item" class="modal hidden">
+    <form method="POST" class="pjax">
+      <div class="modal-inner">
+        <header>
+          <a class="modal-close" href="#" onclick="F1.modal.dismiss(this, event)">Close X</a>
+        </header>
+        <br>
+        <div class="modal-content">
+          <fieldset>
+            <legend>Add New Package Item</legend>
+            <div class="form-field">
+              <label>Package Item Product ID</label>
+              <input name="package-item[product_id]" value="" type="text">
+            </div>
+            <div class="form-field">
+              <label>Package Item Note</label>
+              <textarea name="package-item[note]" rows="2"></textarea>
+            </div>
+          </fieldset>          
+        </div>
+        <br>
+        <footer>
+          <div class="buttons-bar">
+            <button type="submit" name="add-package-item">Add new item</button>
+          </div>
+        </footer>
+      </form>
+    </div>
+  </div>  
+</div>
