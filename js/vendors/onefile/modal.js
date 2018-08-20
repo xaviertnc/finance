@@ -18,10 +18,14 @@ F1.Modal = function (options)
 };
 
 
-F1.Modal.prototype.show = function(modalSelector, event)
+F1.Modal.prototype.show = function(modalSelector, event, resetForm)
 {
   event.preventDefault();
-  $(modalSelector).removeClass('hidden').find(':input').first().focus();
+  var $modal = $(modalSelector);
+  var $inputs = $modal.find(':input');
+  if (resetForm) { $inputs.val(''); }
+  $modal.removeClass('hidden');
+  $inputs.first().focus();
   return false;
 };
 

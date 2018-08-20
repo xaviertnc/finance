@@ -2,20 +2,47 @@
   <form class="pjax" method="POST">
     <fieldset>
       <div class="form-field">
-        <label>Product Code</label>
+        <label>Category</label>
+        <?=$categoriesDropdown?>
+      </div>
+      <div class="form-field">
+        <label>Sub Category</label>
+        <?=$subCategoriesDropdown?>
+      </div>      
+      <div class="form-field">
+        <label>Supplier</label>
+        <?=$suppliersDropdown?>
+      </div>
+      <div class="form-field">
+        <label>Code</label>
         <input name="product[code]" value="<?=$product->code?>" type="text" autofocus>
       </div>
       <div class="form-field">
-        <label>Product Name</label>
+        <label>Name</label>
         <input name="product[name]" value="<?=$product->name?>" type="text">
       </div>
       <div class="form-field">
-        <label>Product Description</label>
+        <label>Description</label>
         <textarea name="product[description]" rows="2"><?=$product->description?></textarea>
+      </div>
+      <div class="form-field">
+        <label>Cost Price</label>
+        <span class="input-group">
+          <span class="add-on">R</span>
+          <input name="product[cost_price]" value="<?=$product->cost_price?>" type="text">
+        </span>
+      </div>
+      <div class="form-field">
+        <label>Default Price</label>
+        <span class="input-group">
+          <span class="add-on">R</span>
+          <input name="product[sell_price]" value="<?=$product->default_price?>" type="text">
+          <small class="add-on">(Recommended selling price)</small>
+        </span>
       </div>
       <div class="buttons-bar">
         <button type="submit" name="update-product">Update product</button>
-      </div>      
+      </div>
     </fieldset>
   </form>
 </div>

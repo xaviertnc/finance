@@ -275,14 +275,15 @@ class DB
     return Xap::exec([$tableName . ':columns']);
   }
 
-  private static function getExecuteQueryFn()
-  {
-    return function($sql, $params) { return DB::select($sql, $params); };
-  }
+  // private static function getExecuteQueryFn()
+  // {
+    // return function($sql, $params) { return DB::select($sql, $params); };
+  // }
 
-  public static function query()
+  public static function query($tableName)
   {
-    return new DbQuery(self::getExecuteQueryFn());
+    $q = new DbQuery(function($sql, $params) { return DB::select($sql, $params); });
+    return $q->from($tableName);
   }
 
 }

@@ -1,0 +1,147 @@
+<div class="client">
+  <form class="pjax" method="POST">
+    <div class="container">
+      <fieldset class="clearfix">
+        <div class="column">
+          <div class="form-field">
+            <label>Invoice Name</label>
+            <input name="template[name]" value="<?=$template->name?>" type="text">
+          </div>
+          <div class="form-field">
+            <label>Billing Period</label>
+            <?=$billingPeriodsDropdown?>
+          </div>
+          <div class="form-field">
+            <label>Description</label>
+            <textarea name="template[description]" rows="2"><?=$template->description?></textarea>
+          </div>
+        </div>
+        <div class="column">
+          <div class="form-field">
+            <label>Start Date</label>
+            <span class="input-group">
+              <input id="start-date" name="template[start_date]" value="<?=$template->start_date?>" type="text">
+              <img class="add-on" id="btnCal1" src="img/calendar.gif" width="16" height="18">
+            </span>
+          </div>
+          <div class="form-field">
+            <label>Expire Date</label>
+            <span class="input-group">
+              <input id="expire-date" name="template[expire_date]" value="<?=$template->expire_date?>" type="text">
+              <img class="add-on" id="btnCal2" src="img/calendar.gif" width="16" height="18">
+            </span>
+          </div>
+          <div class="form-field">
+            <label>VAT Invoice</label>
+            <input name="template[vat_invoice]" value="1" type="checkbox"<?=$template->vat_invoice?'checked':''?>>
+          </div>
+        </div>
+        <div class="row">
+          <button type="submit" name="update-template">Update invoice</button>
+        </div>
+      </fieldset>
+    <br>
+    <div class="action-bar text-right">
+      <button type="button" onclick="F1.modal.show('#add-template-item', event, 'reset')">+ Add invoice item</button>
+    </div>
+    <fieldset>
+      <legend>Invoice Items</legend>
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Item Code</th>
+            <th>Description</th>
+            <th>Unit Price</th>
+            <th>Qty</th>
+            <th>Discount</th>
+            <th>Line Total</th>
+            <th>&nbsp;</th>
+          </tr>
+        </thead>
+        <tbody>
+          <?php foreach ($templateItems as $item): ?>
+          <tr>
+            <td><?=$item->code?></td>
+            <td><?=$item->name?></td>
+            <td><?=Format::currency($item->unit_price, 0, 2)?></td>
+            <td><?=$item->quantity?></td>
+            <td><?=$item->percent_discount?>%</td>
+            <td><?=Format::currency($item->unit_price * $item->quantity, 0, 2)?></td>
+            <td>
+              <a class="pagelink" 
+                href="invoice-template-items/invoice-template-item/edit?id=<?=$item->id?>&amp;client=<?=$client_id?>&amp;template=<?=$template->id?>">
+                  Edit Item
+              </a>
+            </td>
+          </tr>
+          <?php endforeach; ?>
+          <?php if (empty($templateItems)):?>
+          
+          <tr><td colspan="7">- None -</td></tr>
+          <?php else: ?>
+          
+          <tr><td colspan="7">&nbsp;</td></tr>
+          <tr>
+            <td colspan="3">&nbsp;</td>
+            <td colspan="2">Subtotal</td>
+            <td><?=Format::currency($invoiceTotals->subtotal, 0, 2)?></td>
+          </tr>
+          <tr>
+            <td colspan="3">&nbsp;</td>
+            <td colspan="2">VAT @ <?=$app->VAT?>%</td>
+            <td ><?=Format::currency($invoiceTotals->vat, 'n/a', 2)?></td>
+          </tr>
+          <tr>
+            <td colspan="3">&nbsp;</td>
+            <td colspan="2">Grand Total</td>
+            <td><b><?=Format::currency($invoiceTotals->grandTotal, 0, 2)?></b></td>
+          </tr>          
+          <?php endif; ?>
+        </tbody>
+      </table>
+    </fieldset>
+  </form>
+
+  <!-- ADD INVOICE ITEM MODAL -->
+  <div id="add-template-item" class="modal hidden">
+    <form method="POST" class="pjax">
+      <div class="modal-inner">
+        <header>
+          <a class="modal-close" href="#" onclick="F1.modal.dismiss(this, event)">Close X</a>
+        </header>
+        <br>
+        <div class="modal-content">
+          <fieldset>
+            <legend>Add New Invoice Item</legend>
+            <div class="form-field">
+              <label>Item Product</label>
+              <?=$productsDropdown?>
+            </div>
+            <div class="form-field">
+              <label>Qty</label>
+              <input name="template-item[quantity]" value="" type="text">
+            </div>
+            <div class="form-field">
+              <label>% Discount</label>
+              <input name="template-item[percent_discount]" value="" type="text">
+            </div>
+            <div class="form-field">
+              <label>Selling Price</label>
+              <input name="template-item[unit_price]" value="" type="text">
+            </div>            
+            <div class="form-field">
+              <label>Item Note</label>
+              <textarea name="template-item[note]" rows="2"></textarea>
+            </div>
+          </fieldset>
+        </div>
+        <br>
+        <footer>
+          <div class="buttons-bar">
+            <button type="submit" name="add-template-item">Add new item</button>
+          </div>
+        </footer>
+      </form>
+    </div>
+  </div>
+</div>

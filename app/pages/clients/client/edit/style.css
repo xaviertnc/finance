@@ -3,3 +3,17 @@ th { padding: 0.1em 1em; text-align: left; }
 td { padding: 0.1em 1em; }
 .form-field { margin-bottom: 1em; }
 .form-field label { width: 8em; }
+.invoices { width: 100%; }
+.invoices > tbody > tr > td {
+  background-color: linen;
+  border: 1px solid dimgrey;
+  padding: 0.3em 0.5em;
+} 
+.invoice-items {
+  border-collapse: collapse;
+  font-size: 0.9em;
+  margin: 0.5em;
+}
+.invoice-items th { border-bottom: 1px solid gainsboro; }
+.invoice-items td { padding-top: 0.3em; }
+.subtotal td { border-top: 1px solid gainsboro; }

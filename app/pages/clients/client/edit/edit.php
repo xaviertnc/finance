@@ -65,11 +65,11 @@
         break;
       }
       
-      if ($request->action == 'add-package')
+      if ($request->action == 'add-template')
       {
-        if ($model->addPackage($client_id, array_get($_POST, 'package', [])))
+        if ($model->addInvoiceTemplate($client_id, array_get($_POST, 'template', [])))
         {
-          $alerts[] = ['success', 'Package added.', 0];
+          $alerts[] = ['success', 'Invoice Template added.', 0];
         }
         else
         {
@@ -99,10 +99,29 @@
   // ----------------------
   else {
     
-    // Get client packages
-    $packages = $model->listClientPackages($client_id);
+    // Get billing periods
+    $billingPeriods = $model->listBillingPeriods();
+    
+    // Get client invoice templates
+    $templates = $model->listInvoiceTemplates($client_id);
+    
+    // Get client invoice template items
+    foreach ($templates as $template)
+    {
+      $template->items = $model->listInvoiceTemplateItems($template->id);   
+      
+      // Get template invoice totals
+      $templateTotals = new stdClass();
+      $templateTotals->subtotal = 0;
+      foreach ($template->items as $item) {
+        $templateTotals->subtotal += ($item->cost_price * $item->quantity);
+      }
+      $templateTotals->vat = $template->vat_invoice ? $templateTotals->subtotal * ($app->VAT/100) : 0;
+      $templateTotals->grandTotal = round($templateTotals->subtotal + $templateTotals->vat, 2);
+      $template->totals = $templateTotals;
+    }
 
-    // Get View
+    // Render view!
     include $app->partialsPath . '/head.html';
     include $view->partialFile($app->page->dir, $app->page->viewFilePath, 'html', 3, null, '        ');
     include $app->partialsPath . '/foot.html';

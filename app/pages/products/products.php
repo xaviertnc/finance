@@ -1,6 +1,13 @@
 <?php
 
-  DB::connect($app->dbConnection);
+  include $app->componentsPath . '/SelectListItem.php';
+  include $app->componentsPath . '/DropdownSelect.php';
+  
+
+  
+  // ----------------------
+  // -------- PAGE --------
+  // ----------------------
   
   $page = new stdClass();
   $page->title = 'Products';
@@ -16,8 +23,19 @@
   $page->csrfToken = md5(uniqid(rand(), true)); //time();
 
   $app->page = $page;
-  
 
+
+
+  // ----------------------
+  // -------- MODEL --------
+  // ----------------------
+
+  DB::connect($app->dbConnection);
+
+  include $page->modelFilePath;
+  $model = new ProductsModel();  
+
+  
   
   // ----------------------
   // -------- POST --------
@@ -61,9 +79,20 @@
   // ----------------------
   else {
 
-    // Get Model
-    include $page->modelFilePath;
-    $model = new ProductsModel();
+    // Get Categories Dropdown List
+    $categoriesDropdown = new DropdownSelect(
+      'product[category_id]', $model->listCategories(), null, true, true, '- Select Category -');
+      
+    // Get SubCategories Dropdown List
+    $subCategoriesDropdown = new DropdownSelect(
+      'product[subcategory_id]', $model->listSubCategories(), null, true, true, '- Select Sub Category -');
+      
+    // Get Suppliers Dropdown List
+    $suppliersDropdown = new DropdownSelect(
+      'product[supplier_id]', $model->listSuppliers(), null, true, true, '- Select Supplier -');
+      
+    // Get Products List
+    $products = $model->listProducts();
     
     // Get View
     include $app->partialsPath . '/head.html';

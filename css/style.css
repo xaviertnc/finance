@@ -1,10 +1,13 @@
-fieldset { padding: 1em; }
+html { overflow-y: scroll; }
+body { background-color: whitesmoke; }
 
-#page-header .titlebar { background-color: black; color: white; padding: 1em; }
+fieldset { background-color: white; padding: 1em; }
+
+#page-header .titlebar { background-color: maroon; color: white; padding: 1em; }
 #page-header .titlebar a:visited { color: moccasin; }
 
-#page-header .nav { padding: 1em; margin: 0; }
-#page-header .nav li { display: inline-block; margin: 0; padding: 0.3em; border: 1px solid gainsboro; }
+#page-header .nav { padding: 0 0 0.5em; margin: 0; }
+#page-header .nav li { display: inline-block; margin: 0.1em 0; padding: 0.3em; border: 1px solid gainsboro; }
 #page-header .nav .active { border: 1px solid red; }
 
 #busy-indicator {
@@ -30,7 +33,7 @@ fieldset { padding: 1em; }
 
 #back-to-top  a { display: inline-block; padding: 1em 0.5em; }
 
-#page-content { padding: 1em; position: relative; }
+#page-content { padding: 1em 0; position: relative; }
 
 #page-footer { background-color: gainsboro; font-size: 0.9em; padding: 1em; }
 
@@ -109,9 +112,15 @@ label {
   vertical-align: top;
 }
 
-textarea { min-width: 280px; }
+.field-md { min-width: 400px; }
+.field-md input,
+.field-md textarea { min-width: 280px; }
+
+.container { overflow: auto; }
 
 .field { margin: 1em 0; }
+
+.add-on { font-size: 0.8em; }
 
 .form-actions-bar { padding: 1em 0 0; }
 
@@ -119,8 +128,28 @@ textarea { min-width: 280px; }
 .pull-right { float: right; }
 
 .text-left { text-align: left; }
+.text-center { text-align: center; }
 .text-right { text-align: right; }
+
+.column { display: inline-block; float:left; margin-right: 3%; }
+.column:last-of-type { margin-right: 0; }
+
+.clearfix { overflow: auto; }
+.clearfix::after { content: ""; clear: both; display: table; }
+
+.row { clear: both; }
+
+.card {
+  border: 1px solid grey;
+  background-color: white;
+  margin: 0.5em 3px 1em;
+  padding: 1em;
+  /* box-shadow: 1px 1px 3px 0 gray; */
+}
+
+.nowrap { white-space: nowrap; }
 
 @media (max-width:580px) {
   label { display: block; }
+  .field-md { min-width: auto; }
 }

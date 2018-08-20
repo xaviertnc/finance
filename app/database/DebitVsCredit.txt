@@ -1,0 +1,42 @@
+Traditionally, the two effects of an accounting entry are known as Debit (Dr) and Credit (Cr). 
+Accounting system is based on the principal that for every Debit entry, there will always be an 
+equal Credit entry. This is known as the Duality Principal.
+
+Debit refers to the left side of an account.
+Credit refers to the right side of an account.
+
+Debit entries are ones that account for the following effects:
+
+    Increase in assets
+    Increase in expense
+    Decrease in liability
+    Decrease in equity
+    Decrease in income
+
+Credit entries are ones that account for the following effects:
+
+    Decrease in assets
+    Decrease in expense
+    Increase in liability
+    Increase in equity
+    Increase in income
+
+Double Entry is recorded in a manner that the Accounting Equation is always in balance.
+
+Assets - Liabilities = Capital
+
+Any increase in expense (Dr) will be offset by a decrease in assets (Cr) or increase in liability 
+or equity (Cr) and vice-versa. Hence, the accounting equation will still be in equilibrium.
+
+
+Utility Expenses (Light, water, heat...):
+  Telephone
+  Electricity
+  Gas
+  Water
+  Broadband
+  Sewage
+
+  With sophisticated accounting software and inexpensive computers, it is no longer practical for most 
+  businesses to manually enter transactions into journals and then to post to the *general ledger* accounts 
+  and *subsidiary* ledger accounts.

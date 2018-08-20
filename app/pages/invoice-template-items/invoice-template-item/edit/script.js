@@ -7,5 +7,5 @@ F1.clients = {};
 
 F1.afterPageLoadScripts.push(function initClients()
 {
-  F1.console.log('This is AFTER Clients loaded succesfully!');
+  F1.console.log('This is AFTER Client loaded succesfully!');
 });

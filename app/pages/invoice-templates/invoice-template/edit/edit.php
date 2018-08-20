@@ -8,7 +8,8 @@
   // ------ REQUEST -------
   // ----------------------
 
-  $product_id = array_get($_GET, 'id');
+  $client_id = array_get($_GET, 'client');
+  $template_id = array_get($_GET, 'id');
 
 
 
@@ -17,8 +18,11 @@
   // ----------------------
 
   $page = new stdClass();
-  $page->breadcrumbs = ['Products' => 'products'];
-  $page->title = 'Edit Product';
+  $page->breadcrumbs = [
+    'Clients' => 'clients',
+    'Client'  => 'clients/client/edit?id=' . $client_id
+  ];
+  $page->title = 'Edit Recurring Invoice';
   $page->dir = $app->controllerPath;
   $page->id = 'page_' . $app->currentPage;
   $page->state = $app->session->get($page->id, []);
@@ -41,14 +45,15 @@
   DB::connect($app->dbConnection);
 
   include $page->modelFilePath;
-  $model = new ProductModel();
-  $product = $model->getProduct($product_id);
+  $model = new InvoiceTemplateModel();
+  $template = $model->getInvoiceTemplate($template_id);
 
 
 
   // ----------------------
   // -------- POST --------
   // ----------------------
+
   if ($request->method == 'POST')
   {
     do {
@@ -61,9 +66,9 @@
 
       $alerts[] = ['info', 'Hey, you posted some data with action: "' .  $request->action . '"', 0];
 
-      if ($request->action == 'update-product')
+      if ($request->action == 'update-template')
       {
-        if ($model->updateProduct($product_id, array_get($_POST, 'product', [])))
+        if ($model->updateInvoiceTemplate($template_id, array_get($_POST, 'template', [])))
         {
           $alerts[] = ['success', 'Update succesful.', 0];
         }
@@ -74,11 +79,11 @@
         break;
       }
 
-      if ($request->action == 'add-package')
+      if ($request->action == 'add-template-item')
       {
-        if ($model->addPackage($product_id, array_get($_POST, 'package', [])))
+        if ($model->addInvoiceTemplateItem($template_id, array_get($_POST, 'template-item', [])))
         {
-          $alerts[] = ['success', 'Package added.', 0];
+          $alerts[] = ['success', 'Invoice template item added.', 0];
         }
         else
         {
@@ -106,20 +111,29 @@
   // ----------------------
   // -------- GET ---------
   // ----------------------
+
   else {
 
-    // Get Categories Dropdown List
-    $categoriesDropdown = new DropdownSelect(
-      'product[category_id]', $model->listCategories(), $product->category_id, true, true, '- Select Category -');
+    // Get InvoiceTemplate Items List
+    $templateItems = $model->listInvoiceTemplateItems($template_id);
+    
+    // Get Invoice Totals
+    $invoiceTotals = new stdClass();
+    $invoiceTotals->subtotal = 0;
+    foreach ($templateItems as $item) {
+      $invoiceTotals->subtotal += ($item->unit_price * $item->quantity);
+    }
+    $invoiceTotals->vat = $template->vat_invoice ? $invoiceTotals->subtotal * ($app->VAT/100) : 0;
+    $invoiceTotals->grandTotal = round($invoiceTotals->subtotal + $invoiceTotals->vat, 2);
+
+    // Get Products Dropdown List
+    $billingPeriodsDropdown = new DropdownSelect(
+      'template[billing_period_id]', $model->listBillingPeriods(), $template->billing_period_id, true, true, '- Select Billing Period -');
       
-    // Get SubCategories Dropdown List
-    $subCategoriesDropdown = new DropdownSelect(
-      'product[subcategory_id]', $model->listSubCategories(), $product->subcategory_id, true, true, '- Select Sub Category -');
-      
-    // Get Suppliers Dropdown List
-    $suppliersDropdown = new DropdownSelect(
-      'product[supplier_id]', $model->listSuppliers(), $product->supplier_id, true, true, '- Select Supplier -');
-      
+    // Get Products Dropdown List
+    $productsDropdown = new DropdownSelect(
+      'template-item[product_id]', $model->listProducts(), null, true, true, '- Select Product -');
+
     // Get View
     include $app->partialsPath . '/head.html';
     include $view->partialFile($app->page->dir, $app->page->viewFilePath, 'html', 3, null, '        ');

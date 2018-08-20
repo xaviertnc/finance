@@ -1,7 +1,7 @@
 <?php
 
   $page = new stdClass();
-  $page->title = 'Home';
+  $page->title = 'Dashboard';
   $page->dir = $app->controllerPath;
   $page->id = 'page_' . $app->currentPage;
   $page->state = $app->session->get($page->id, []);

@@ -36,10 +36,10 @@ class DropdownSelect {
   }
 
   
-  public function draw()
+  public function __toString()
   {
     $html = '<select name="' . $this->name . '">' . PHP_EOL;
-    foreach($this->items as $index => $item) { $html .= $item->draw(); }
+    foreach($this->items as $index => $item) { $html .= $item; }
     $html .= '</select>' . PHP_EOL;
     return $html;
   }

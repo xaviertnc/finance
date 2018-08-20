@@ -1,24 +1,30 @@
 <?php
-    
+
+  include $app->componentsPath . '/SelectListItem.php';
+  include $app->componentsPath . '/DropdownSelect.php';
+
+
   // ----------------------
   // ------ REQUEST -------
-  // ----------------------  
+  // ----------------------
 
+  $item_id = array_get($_GET, 'id');
   $client_id = array_get($_GET, 'client');
-  $package_id = array_get($_GET, 'id');
+  $template_id = array_get($_GET, 'template');
 
-  
+
 
   // ----------------------
   // -------- PAGE --------
   // ----------------------
-    
+  
   $page = new stdClass();
   $page->breadcrumbs = [
     'Clients' => 'clients',
-    'Client'  => 'clients/client/edit?id=' . $client_id
-  ];
-  $page->title = 'Edit Package';
+    'Client'  => 'clients/client/edit?id=' . $client_id,
+    'Invoice' => 'invoice-templates/invoice-template/edit?id=' . $template_id . '&amp;client=' . $client_id
+  ];  
+  $page->title = 'Edit Invoice Template Item';
   $page->dir = $app->controllerPath;
   $page->id = 'page_' . $app->currentPage;  
   $page->state = $app->session->get($page->id, []);
@@ -31,7 +37,7 @@
   $page->csrfToken = md5(uniqid(rand(), true)); //time();
 
   $app->page = $page;
-
+  
   
 
   // ----------------------
@@ -41,15 +47,14 @@
   DB::connect($app->dbConnection);
 
   include $page->modelFilePath;  
-  $model = new ClientPackageModel();
-  $package = $model->getPackage($package_id);
+  $model = new InvoiceItemModel();
+  $item = $model->getInvoiceItem($item_id);
 
-  
+
   
   // ----------------------
   // -------- POST --------
   // ----------------------
-  
   if ($request->method == 'POST')
   {
     do {
@@ -62,24 +67,12 @@
 
       $alerts[] = ['info', 'Hey, you posted some data with action: "' .  $request->action . '"', 0];
 
-      if ($request->action == 'update-package')
+     
+      if ($request->action == 'update-invoice-item')
       {
-        if ($model->updatePackage($package_id, array_get($_POST, 'package', [])))
+        if ($model->updateInvoiceItem($item_id, array_get($_POST, 'invoice-item', [])))
         {
-          $alerts[] = ['success', 'Update succesful.', 0];
-        }
-        else
-        {
-          $alerts[] = ['danger', 'Oops, something went wrong!', 0];
-        }
-        break;
-      }
-      
-      if ($request->action == 'add-package-item')
-      {
-        if ($model->addPackageItem($package_id, array_get($_POST, 'package-item', [])))
-        {
-          $alerts[] = ['success', 'Package item added.', 0];
+          $alerts[] = ['success', 'Invoice item updated.', 0];
         }
         else
         {
@@ -107,13 +100,16 @@
   // ----------------------
   // -------- GET ---------
   // ----------------------
-  
   else {
     
-    // Get Items List
-    $packageItems = $model->listPackageItems($package_id);
-    
-    // Get View
+    // Get currently linked product
+    $product = $model->getProduct($item->product_id);
+         
+    // Get Products Dropdown List
+    $productsDropdown = new DropdownSelect(
+      'invoice-item[product_id]', $model->listProducts(), $item->product_id, true, true, '- Select Product -');
+
+    // Render view!
     include $app->partialsPath . '/head.html';
     include $view->partialFile($app->page->dir, $app->page->viewFilePath, 'html', 3, null, '        ');
     include $app->partialsPath . '/foot.html';

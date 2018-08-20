@@ -13,7 +13,7 @@ use Exception;
  *
  * Usage Example(s):
  * -----------------
- * DbQuery::from('view_uitstallings')
+ * DB::query->from('view_uitstallings')
  * ->where('pakket_id', '=', $pakket_id)
  * ->where('id', '>', $id, ['ignore'=>[null]])
  * ->where('refno', 'IS NULL')
@@ -35,15 +35,15 @@ use Exception;
  *
  * ->limit($offset, $itemspp)
  * ->paginate($pageno, $itemspp)
- * ->getResultsIndexed('id', 'name,description');
- * ->getResults('id,desc');
+ * ->getBy('id', 'name,description');
+ * ->get('id,desc');
  *
  */
  
 class DbQuery
 {
 
-  public $runQueryFn;
+  public $executeQueryFn;
 
 
   public function __construct($executeQueryFn)
@@ -54,13 +54,13 @@ class DbQuery
 
   private function getExecuteCallback()
   {
-    return function ($resultsCalledAs = null, $tableName = null, $sql = null, $params = null, $args = null)
+    return function ($resultsFormat = null, $tableName = null, $sql = null, $params = null, $args = null)
     {
       $sql = $tableName . ($sql ? " WHERE $sql" : '');
       
-      $results = $this->executeQueryFn($sql, $params);
+      $results = call_user_func($this->executeQueryFn, $sql, $params);
       
-      if ($resultsCalledAs == 'getResultsIndexed')
+      if ($resultsFormat == 'getBy')
       {
         $lookup = array();
         $id_column = isset($args[0]) ? $args[0] : 'id';
@@ -101,7 +101,7 @@ class DbQuery
 
   public function from($tableName)
   {
-    Log::DbQuery('DbQuery::from(' . $tableName . '), Start');
+    // Log::DbQuery('DbQuery::from(' . $tableName . '), Start');
     return new QueryStatement($tableName, $this->getExecuteCallback());
   }
 
@@ -291,11 +291,11 @@ class QueryStatement
    * the results before delivery according to the name under which the callback was invoked!
    *
    * E.g.
-   * ->getResults()
-   * ->getResultsIndexed()
+   * ->get()
+   * ->getBy()
    *
    * @param string $method Whatever the user wants to name this call for results.
-   *   e.g. getResultsIndexed, fetchResults, etc.
+   *   e.g. getIndexed, fetchResults, etc.
    *
    * @param array $arguments
    *

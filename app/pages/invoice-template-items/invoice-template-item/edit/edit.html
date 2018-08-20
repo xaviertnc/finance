@@ -1,0 +1,35 @@
+<div class="invoice-item">
+
+  <div class="container">
+    <form class="pjax" method="POST">
+      <fieldset class="clearfix">
+        <div class="form-field">
+          <label>Item Product</label>
+          <?=$productsDropdown?>
+        </div>
+        <div class="form-field">
+          <label>Qty</label>
+          <input name="invoice-item[quantity]" value="<?=$item->quantity?>" type="text">
+        </div>
+        <div class="form-field">
+          <label>% Discount</label>
+          <input name="invoice-item[percent_discount]" value="<?=$item->percent_discount?>" type="text">
+        </div>
+        <div class="form-field">
+          <label>Selling Price</label>
+          <span class="input-group">
+            <input name="invoice-item[unit_price]" value="<?=$item->unit_price?>" type="text">
+            <small class="add-on">(Recommended: <?=Format::currency($product->default_price, 0, 2)?>)</small>
+          </span>
+        </div>            
+        <div class="form-field">
+          <label>Item Note</label>
+          <textarea name="invoice-item[note]" rows="2"><?=$item->note?></textarea>
+        </div>
+        <div class="row">
+          <button type="submit" name="update-invoice-item">Update invoice item</button>
+        </div>        
+      </fieldset>
+    </form>
+  </div>
+</div>

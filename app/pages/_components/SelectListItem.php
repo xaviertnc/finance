@@ -9,6 +9,7 @@
 
 class SelectListItem {
 
+  protected $index;
   protected $value = null;
   protected $label = 'Option';
   protected $selected = false;
@@ -23,7 +24,7 @@ class SelectListItem {
   }
 
   
-  public function draw()
+  public function __toString()
   {
     return '<option value="' . $this->value . ($this->selected ? '" selected>' : '">') . ($this->label ?: $this->value) . '</option>' . PHP_EOL;
   }

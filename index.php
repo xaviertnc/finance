@@ -33,7 +33,7 @@ $request->back = array_get($_SERVER, 'HTTP_REFERER');
 $request->isAjax = isset($_SERVER['HTTP_X_REQUESTED_WITH']);
 $request->parts = explode('?', $request->uri);
 $request->query = isset($request->parts[1]) ? $request->parts[1] : '';
-$request->pageref = trim(substr($request->parts[0], strlen($request->uriBase)), '/') ?: 'home';
+$request->pageref = trim(substr($request->parts[0], strlen($request->uriBase)), '/') ?: 'dashboard';
 $request->parts = explode('/', $request->pageref);
 
 
@@ -48,12 +48,14 @@ $app->dbConnection =
   'DBUSER' => 'root',
   'DBPASS' => 'root'
 ];
+$app->VAT = 15;
 $app->id = 'MyFinance';
 $app->siteName = 'My Finance';
 $app->rootPath = 'C:/UniServerZ/vhosts/NM/finance';
 $app->request = $request;
 $app->response = $response;
 $app->appPath = $app->rootPath . '/app';
+$app->modelsPath = $app->appPath . '/models';
 $app->vendorsPath = $app->appPath . '/vendors';
 $app->storagePath = $app->appPath . '/storage';
 $app->servicesPath = $app->appPath . '/services';
@@ -74,6 +76,7 @@ if ( ! file_exists($app->controller)) {
 require $app->servicesPath . '/Logger.php';
 require $app->servicesPath . '/Session.php';
 require $app->servicesPath . '/Database.php';
+require $app->servicesPath . '/Format.php';
 require $app->servicesPath . '/View.php';
 
 

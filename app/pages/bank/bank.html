@@ -1,11 +1,28 @@
 <div class="transactions">
-  <table class="table">
+  <h3>Taxyear (<?=$taxYear?>)</h3>
+  <hr>
+  <div class="clearfix">
+    <form class="pjax pull-right" method="POST">
+      <button type="submit" name="run-auto-entities">Run Auto Entities</button>
+    </form>  
+    <form class="pull-left" method="GET">
+      <input name="year" value="<?=$taxYear?>" type="hidden">
+      <?=$accNamesDropdown?>
+      <?=$taxMonthsDropDown?>
+      <button type="submit">Show</button>
+    </form>
+  </div>
+  <hr>
+  <table class="list">
     <thead>
       <tr>
         <th>Date</th>
         <th>Description</th>
-        <th>Db</th>
-        <th>Cr</th>
+        <th>Entity</th>
+        <th class="text-right">Db</th>
+        <th class="text-right">Cr</th>
+        <th>Allocation</th>
+        <th>Status</th>
       </tr>
     </thead>
     <tbody>
@@ -14,8 +31,11 @@
       <tr>
         <td><?=$trx->date?></td>
         <td><?=$trx->description?></td>
-        <td><?=$trx->amount > 0 ? $trx->amount : ''?></td>
-        <td><?=$trx->amount <= 0 ? $trx->amount : ''?></td>
+        <td><?=$trx->entity_id?:'-'?></td>
+        <td class="text-right blue"><?=$trx->amount > 0 ? Format::currency($trx->amount, 0, 2) : ''?></td>
+        <td class="text-right red"><?=$trx->amount <= 0 ? '-'.Format::currency(abs($trx->amount), 0, 2) : ''?></td>
+        <td><?=$trx->ledger_id?:'-'?></td>
+        <td><?=$trx->status_id?:'*Unassigned'?></td>
       </tr>
       <?php endforeach;?>
    

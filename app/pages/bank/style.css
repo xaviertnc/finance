@@ -1,3 +1,8 @@
 /* Page Styles Go Here... */
 th { padding: 0.1em 1em; text-align: left; }
 td { padding: 0.1em 1em; }
+
+h3 { margin-top: 0; }
+.list { font-family: verdana, sans-serif; font-size: 11px; }
+.blue { color: blue; }
+.red { color: red; }

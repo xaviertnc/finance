@@ -8,22 +8,25 @@
       <tr>
         <th>Code</th>
         <th>Name</th>
-        <th>Description</th>
-        <th>Action</th>
+        <th>Cost Price</th>
+        <th>&nbsp;</th>
       </tr>
     </thead>
     <tbody>
-      <?php foreach ($model->listProducts() as $product): ?>
+      <?php foreach ($products as $product): ?>
       <tr>
         <td><?=$product->code?></td>
-        <td><?=$product->name?></td>
         <td><?=$product->description?></td>
+        <td>R<?=$product->cost_price?></td>
         <td><a class="pagelink" href="products/product/edit?id=<?=$product->id?>">Edit Product</a></td>
       </tr>
       <?php endforeach; ?>
+      <?php if (empty($products)):?>
+      <tr><td colspan="4">- None -</td></tr>
+      <?php endif; ?>
     </tbody>
   </table>
-  
+
   <!-- ADD PRODUCT MODAL -->
   <div id="add-product" class="modal hidden">
     <form method="POST" class="pjax">
@@ -36,18 +39,44 @@
           <fieldset>
             <legend>New Product</legend>
             <div class="form-field">
-              <label>Product Code</label>
+              <label>Category</label>
+              <?=$categoriesDropdown?>
+            </div>
+            <div class="form-field">
+              <label>Sub Category</label>
+              <?=$subCategoriesDropdown?>
+            </div>            
+            <div class="form-field">
+              <label>Supplier</label>
+              <?=$suppliersDropdown?>
+            </div>
+            <div class="form-field">
+              <label>Code</label>
               <input name="product[code]" value="" type="text">
             </div>
             <div class="form-field">
-              <label>Product Name</label>
+              <label>Name</label>
               <input name="product[name]" value="" type="text">
             </div>
             <div class="form-field">
-              <label>Product Description</label>
+              <label>Description</label>
               <textarea name="product[description]" rows="2"></textarea>
-            </div>            
-          </fieldset>          
+            </div>
+            <div class="form-field">
+              <label>Cost Price</label>
+              <span class="input-group">
+                <span class="add-on">R</span>
+                <input name="product[cost_price]" value="" type="text">
+              </span>
+            </div>
+            <div class="form-field">
+              <label>Selling Price</label>
+              <span class="input-group">
+                <span class="add-on">R</span>
+                <input name="product[sell_price]" value="" type="text">
+              </span>
+            </div>
+          </fieldset>
         </div>
         <br>
         <footer>
@@ -58,5 +87,5 @@
       </form>
     </div>
   </div>
-  
+
 </div>
