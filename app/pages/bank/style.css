@@ -4,5 +4,7 @@ td { padding: 0.1em 1em; }
 
 h3 { margin-top: 0; }
 .list { font-family: verdana, sans-serif; font-size: 11px; }
+.list td { white-space: nowrap; text-overflow: ellipsis; overflow: hidden; }
+.entity { max-width: 130px; }
 .blue { color: blue; }
 .red { color: red; }

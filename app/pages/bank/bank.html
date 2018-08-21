@@ -3,7 +3,8 @@
   <hr>
   <div class="clearfix">
     <form class="pjax pull-right" method="POST">
-      <button type="submit" name="run-auto-entities">Run Auto Entities</button>
+      <button type="submit" name="run-auto-detect">Run Auto Detect</button>
+      <button type="submit" name="run-auto-assign">Run Auto Assign</button>
     </form>  
     <form class="pull-left" method="GET">
       <input name="year" value="<?=$taxYear?>" type="hidden">
@@ -31,11 +32,11 @@
       <tr>
         <td><?=$trx->date?></td>
         <td><?=$trx->description?></td>
-        <td><?=$trx->entity_id?:'-'?></td>
+        <td class="entity"><?php $client = array_get($clients, $trx->entity_id); print $client?$client->name:'-'; ?></td>
         <td class="text-right blue"><?=$trx->amount > 0 ? Format::currency($trx->amount, 0, 2) : ''?></td>
         <td class="text-right red"><?=$trx->amount <= 0 ? '-'.Format::currency(abs($trx->amount), 0, 2) : ''?></td>
-        <td><?=$trx->ledger_id?:'-'?></td>
-        <td><?=$trx->status_id?:'*Unassigned'?></td>
+        <td><?php $account = array_get($chart_of_accounts, $trx->ledger_acc_id); print $account?:'-'; ?></td>
+        <td><?php $status = array_get($trx_statuses, $trx->status_id); print $status?:'*'; ?></td>
       </tr>
       <?php endforeach;?>
    

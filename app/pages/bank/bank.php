@@ -42,11 +42,13 @@
 
   DB::connect($app->dbConnection);
 
-  include $app->modelsPath . '/collections/TaxMonths.php';
-  $taxMonths = new TaxMonths($taxYear);
-
   include $page->modelFilePath;
   $model = new BankModel();
+
+  // Get account names
+  $accountNames = $model->listAccountNames();
+  $accountShortNames = array_keys($accountNames);
+  if ( ! $accShortName) { $accShortName = reset($accountShortNames); }
 
   // Get transactions
   $fromDate = $taxMonth;
@@ -69,8 +71,70 @@
       $request->action = array_get($_POST, '__ACTION__');
       $request->params = array_get($_POST, '__PARAMS__');
 
-      $alerts[] = ['info', 'Hey, you posted some data.', 3000];
+      // $alerts[] = ['info', 'Hey, you posted some data.', 3000];
 
+      if ($request->action == 'run-auto-detect')
+      {
+        $alerts[] = ['warning', 'Lekker manne, kom ons looi daai ding.', 0];
+        
+        foreach ($transactions as $trx) {
+          $regex = '/IN(\d{5,6})/i';
+          if (preg_match($regex, $trx->description, $matches)) {
+            $invoice_no = $matches[1];
+            $app->log->bank_detect('matches = ' . print_r($matches, true));
+            $invoice = $model->getInvoice($invoice_no);            
+            $model->updateBankTrx($accShortName, $trx->id, [
+              'entity_id'      => $invoice->client_id,
+              'category_id'    => 4,   // Revenue
+              'subcategory_id' => 29,  // Sales
+              'ledger_acc_id'  => 128, // Sales - General
+              'status_id'      => 1    // INxxxx Assign
+            ]);
+          }
+        }
+        
+        foreach ($transactions as $trx) {
+          if ($trx->ledger_acc_id) { continue; }
+          $regex = '/D\d{5}/i';
+          if (preg_match($regex, $trx->description, $matches)) {
+            $client_acc_no = $matches[0];
+            $app->log->bank_detect('matches = ' . print_r($matches, true));
+            $client = $model->getClientByAccNo($client_acc_no);            
+            $model->updateBankTrx($accShortName, $trx->id, [
+              'entity_id'      => $client->id,
+              'category_id'    => 4,   // Revenue
+              'subcategory_id' => 29,  // Sales
+              'ledger_acc_id'  => 128, // Sales - General
+              'status_id'      => 2    // Dxxxx Assign
+            ]);
+          }
+        }
+        
+        $clients = $model->listClients();
+        foreach ($clients as $client) {
+          $regex = $client->regex;
+          if ( ! $regex) { continue; }
+          foreach ($transactions as $trx) {
+            if ($trx->ledger_acc_id) { continue; }
+            if (preg_match($regex, $trx->description)) {
+              $model->updateBankTrx($accShortName, $trx->id, [
+                'entity_id'      => $client->id,
+                'category_id'    => 4,   // Revenue
+                'subcategory_id' => 29,  // Sales
+                'ledger_acc_id'  => 128, // Sales - General
+                'status_id'      => 3    // Regex Assign
+              ]);
+            } 
+          }
+        }
+        break;
+      }
+      
+      if ($request->action == 'run-auto-assign') {
+        $alerts[] = ['danger', 'SHIT Manne, kom ons probeer hom reg kry...', 0];
+        break;
+      }
+      
       if ($request->action == 'delete-item') {
         $alerts[] = ['danger', 'Aaww! You just deleted little Timmy #' . $request->params .' :-(', 0];
         break;
@@ -92,14 +156,18 @@
   // ----------------------
 
   else {
+    
+    $clients = $model->listClients();
+    $trx_statuses = $model->listStatuses();
+    // $acc_subcategories = $model->listAccSubCategories();
+    $chart_of_accounts = $model->listChartOfAccounts();
 
-    // Get Bank Accounts dropdown
-    $accountNames = $model->listAccountNames();
-    $accountShortNames = array_keys($accountNames);
-    if ( ! $accShortName) { $accShortName = reset($accountShortNames); }
+    // Get Bank Accounts Dropdown
     $accNamesDropdown = new DropdownSelect('acc', $accountNames, $accShortName, true, true, '- Select Account -');
 
     // Get Months Dropdown
+    include $app->modelsPath . '/collections/TaxMonths.php';
+    $taxMonths = new TaxMonths($taxYear);    
     $taxMonthsDropDown = new DropdownSelect('month', $taxMonths->getAll(), $taxMonth);
 
     // Render view!

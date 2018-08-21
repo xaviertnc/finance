@@ -2,4 +2,4 @@
 
 require $app->vendorsPath . '/OneFile/Logger.php';
 
-$app->logger = new \OneFile\Logger($app->storagePath . '/logs');
+$app->log = new \OneFile\Logger($app->storagePath . '/logs');

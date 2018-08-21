@@ -11,7 +11,7 @@ CREATE TABLE `acc_subcategories` (
   `category_id` int(11) NOT NULL,
   `description` varchar(255) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 INSERT INTO `acc_subcategories` (`category_id`, `description`) VALUES
 (1,	'Cash'),
@@ -42,9 +42,24 @@ INSERT INTO `acc_subcategories` (`category_id`, `description`) VALUES
 (3,	'Personal Drawing'),
 (3,	'Investor Equity'),
 (3,	'Investor Dividents'),
-(4,	'Sales'),
-(4,	'Services'),
-(5,	'Cost of Sales'),
+(4,	'Sales - General'),
+(4,	'Sales - Hetzner'),
+(4,	'Sales - Axxess'),
+(4,	'Sales - Afrihost'),
+(4,	'Sales - WebAfrica'),
+(4,	'Sales - Computers'),
+(4,	'Sales - Software'),
+(4,	'Services - General'),
+(4,	'Services - KragDag'),
+(4,	'Services - HomeSchoolExpo'),
+(4,	'Services - MrPrepaid'),
+(5,	'Cost of Sales - General'),
+(5,	'Cost of Sales - Hetzner'),
+(5,	'Cost of Sales - Axxess'),
+(5,	'Cost of Sales - Afrihost'),
+(5,	'Cost of Sales - WebAfrica'),
+(5,	'Cost of Sales - Computers'),
+(5,	'Cost of Sales - Software'),
 (5,	'Supplies'),
 (5,	'Salaries'),
 (5,	'Wages'),

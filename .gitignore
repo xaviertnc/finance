@@ -1,3 +1,6 @@
 nbproject
 js/vendors/junk
 **/cache
+app/storage
+*.log
+
