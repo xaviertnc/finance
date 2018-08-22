@@ -16,16 +16,22 @@ class SupplierModel
   }
 
   
-  public function listSupplierPackages($supplier_id)
+  public function listSupplierTemplates($supplier_id)
   {
-    return DB::select('supplier_packages WHERE supplier_id=?', [$supplier_id]);
+    return DB::select('order_templates WHERE supplier_id=?', [$supplier_id]);
   }
   
   
-  public function addPackage($supplier_id, $packageData)
+  public function addOrderTemplate($supplier_id, $templateData)
   {
-    $ok = DB::insertInto('supplier_packages', ['supplier_id' => $supplier_id] + $packageData);
+    $ok = DB::insertInto('order_templates', ['supplier_id' => $supplier_id] + $templateData);
     return $ok ? DB::lastInsertId() : 0;
   }  
+  
+  
+  public function listChartOfAccounts()
+  {
+    return DB::query('chart_of_accounts')->getBy('id', 'description');
+  }
   
 }

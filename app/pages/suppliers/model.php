@@ -5,7 +5,7 @@ class SuppliersModel
 
   public function listSuppliers()
   {
-    return DB::select('suppliers');
+    return DB::select('suppliers ORDER BY acc_no');
   }
   
   
@@ -13,6 +13,12 @@ class SuppliersModel
   {
     $ok = DB::insertInto('suppliers', $supplierData);
     return $ok ? DB::lastInsertId() : 0;
+  }
+  
+  
+  public function listChartOfAccounts()
+  {
+    return DB::query('chart_of_accounts')->getBy('id', 'description');
   }
   
 }

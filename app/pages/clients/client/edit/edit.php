@@ -1,12 +1,26 @@
 <?php
 
-  DB::connect($app->dbConnection);
-  
+  include $app->componentsPath . '/SelectListItem.php';
+  include $app->componentsPath . '/DropdownSelect.php';
+
+
+  // ----------------------
+  // ------ REQUEST -------
+  // ----------------------
+
+  $client_id = array_get($_GET, 'id');
+
+
+
+  // ----------------------
+  // -------- PAGE --------
+  // ----------------------
+
   $page = new stdClass();
-  $page->breadcrumbs = ['Clients' => 'clients'];  
+  $page->breadcrumbs = ['Clients' => 'clients'];
   $page->title = 'Edit Client';
   $page->dir = $app->controllerPath;
-  $page->id = 'page_' . $app->currentPage;  
+  $page->id = 'page_' . $app->currentPage;
   $page->state = $app->session->get($page->id, []);
   $page->errors = $app->session->get('errors', []);
   $page->alerts = $app->session->get('alerts', []);
@@ -17,26 +31,21 @@
   $page->csrfToken = md5(uniqid(rand(), true)); //time();
 
   $app->page = $page;
-  
-  
-  // ----------------------
-  // ------ REQUEST -------
-  // ----------------------  
 
-  $client_id = array_get($_GET, 'id');
 
-  
 
   // ----------------------
   // -------- MODEL --------
   // ----------------------
 
-  include $page->modelFilePath;  
+  DB::connect($app->dbConnection);
+
+  include $page->modelFilePath;
   $model = new ClientModel();
   $client = $model->getClient($client_id);
 
 
-  
+
   // ----------------------
   // -------- POST --------
   // ----------------------
@@ -64,7 +73,7 @@
         }
         break;
       }
-      
+
       if ($request->action == 'add-template')
       {
         if ($model->addInvoiceTemplate($client_id, array_get($_POST, 'template', [])))
@@ -76,7 +85,7 @@
           $alerts[] = ['danger', 'Oops, something went wrong!', 0];
         }
         break;
-      }        
+      }
 
       if ($request->action == 'delete-item') {
         $alerts[] = ['danger', 'Aaww! You just deleted little Timmy #' . $request->params .' :-(', 0];
@@ -88,28 +97,33 @@
     // FLASH Messages
     $app->session->put('errors', $errors);
     $app->session->put('alerts', $alerts);
-    
+
     $response->redirectTo = $request->back ?: $request->uri;
   }
 
 
-  
+
   // ----------------------
   // -------- GET ---------
   // ----------------------
   else {
-    
+
+    // Get Chart Of Accounts Dropdown List
+    $chartOfAccountsDropdown = new DropdownSelect(
+      'client[ledger_acc_id]', $model->listChartOfAccounts(), $client->ledger_acc_id,
+      true, true, '- Select Ledger Account -');
+
     // Get billing periods
     $billingPeriods = $model->listBillingPeriods();
-    
+
     // Get client invoice templates
     $templates = $model->listInvoiceTemplates($client_id);
-    
+
     // Get client invoice template items
     foreach ($templates as $template)
     {
-      $template->items = $model->listInvoiceTemplateItems($template->id);   
-      
+      $template->items = $model->listInvoiceTemplateItems($template->id);
+
       // Get template invoice totals
       $templateTotals = new stdClass();
       $templateTotals->subtotal = 0;

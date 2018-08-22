@@ -9,8 +9,7 @@
   // ----------------------
 
   $page = new stdClass();
-  $page->breadcrumbs = ['Suppliers' => 'suppliers'];
-  $page->title = 'Edit Supplier';
+  $page->title = 'Other Transaction Entities';
   $page->dir = $app->controllerPath;
   $page->id = 'page_' . $app->currentPage;
   $page->state = $app->session->get($page->id, []);
@@ -27,24 +26,15 @@
 
 
   // ----------------------
-  // ------ REQUEST -------
-  // ----------------------
-
-  $supplier_id = array_get($_GET, 'id');
-
-
-
-  // ----------------------
   // -------- MODEL --------
   // ----------------------
 
   DB::connect($app->dbConnection);
 
   include $page->modelFilePath;
-  $model = new SupplierModel();
-  $supplier = $model->getSupplier($supplier_id);
+  $model = new EntitiesModel();
 
-
+  
 
   // ----------------------
   // -------- POST --------
@@ -59,31 +49,11 @@
       $request->action = array_get($_POST, '__ACTION__');
       $request->params = array_get($_POST, '__PARAMS__');
 
-      $alerts[] = ['info', 'Hey, you posted some data with action: "' .  $request->action . '"', 0];
+      $alerts[] = ['info', 'Hey, you posted some data.', 3000];
 
-      if ($request->action == 'update-supplier')
-      {
-        if ($model->updateSupplier($supplier_id, array_get($_POST, 'supplier', [])))
-        {
-          $alerts[] = ['success', 'Update succesful.', 0];
-        }
-        else
-        {
-          $alerts[] = ['danger', 'Oops, something went wrong!', 0];
-        }
-        break;
-      }
-
-      if ($request->action == 'add-order-template')
-      {
-        if ($model->addOrderTemplate($supplier_id, array_get($_POST, 'template', [])))
-        {
-          $alerts[] = ['success', 'Order template added.', 0];
-        }
-        else
-        {
-          $alerts[] = ['danger', 'Oops, something went wrong!', 0];
-        }
+      if ($request->action == 'add-entity') {
+        $model->insertEntity(array_get($_POST, 'entity'));
+        $alerts[] = ['success', 'Congrats on a nice new entity!', 0];
         break;
       }
 
@@ -108,16 +78,26 @@
   // ----------------------
   else {
 
-    // Get supplier templates
-    $templates = $model->listSupplierTemplates($supplier_id);
-
+    // Get Entities List
+    $entities = $model->listEntities();
+    
+    // Get next supplier account number
+    if ($entities) {
+      $lastEntity = end($entities);
+      $nextAccNo = 'E' . str_pad(substr($lastEntity->acc_no, 1) + 1, 5, '0', STR_PAD_LEFT);
+    } else { 
+      $nextAccNo = 'C00001';
+    }
+    
+    // Get Entity Groups Dropdown List
+    $groupsDropdown = new DropdownSelect(
+      'entity[group_id]', $model->listEntityGroups(), null, true, true, '- Select Group -');
 
     // Get Chart Of Accounts Dropdown List
     $chartOfAccountsDropdown = new DropdownSelect(
-      'supplier[ledger_acc_id]', $model->listChartOfAccounts(), $supplier->ledger_acc_id,
-        true, true, '- Select Ledger Account -');
+      'entity[ledger_acc_id]', $model->listChartOfAccounts(), null, true, true, '- Select Ledger Account -');
 
-    // Get View
+    // Render View!
     include $app->partialsPath . '/head.html';
     include $view->partialFile($app->page->dir, $app->page->viewFilePath, 'html', 3, null, '        ');
     include $app->partialsPath . '/foot.html';

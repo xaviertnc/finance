@@ -1,6 +1,12 @@
 <?php
 
-  DB::connect($app->dbConnection);
+  include $app->componentsPath . '/SelectListItem.php';
+  include $app->componentsPath . '/DropdownSelect.php';
+
+
+  // ----------------------
+  // -------- PAGE --------
+  // ----------------------
   
   $page = new stdClass();
   $page->title = 'Suppliers';
@@ -16,8 +22,19 @@
   $page->csrfToken = md5(uniqid(rand(), true)); //time();
 
   $app->page = $page;
-  
 
+
+  
+  // ----------------------
+  // -------- MODEL --------
+  // ----------------------
+
+  DB::connect($app->dbConnection);
+
+  include $page->modelFilePath;
+  $model = new SuppliersModel();
+
+  
   
   // ----------------------
   // -------- POST --------
@@ -35,8 +52,9 @@
       $alerts[] = ['info', 'Hey, you posted some data.', 3000];
 
       if ($request->action == 'add-supplier') {
-        DB::insertInto('suppliers', array_get($_POST, 'supplier'));
-        $alerts[] = ['success', 'Congrats on a nice new supplier!', 5000];
+        if ($model->insertSupplier(array_get($_POST, 'supplier'))) {
+          $alerts[] = ['success', 'Congrats on a nice new supplier!', 0];
+        }
         break;
       }
 
@@ -61,12 +79,22 @@
   // ----------------------
   else {
 
-    // Get Model
-    include $page->modelFilePath;
-    $model = new SuppliersModel();
+    // Get list of suppliers
     $suppliers = $model->listSuppliers();
+          
+    // Get next supplier account number
+    if ($suppliers) {
+      $lastSupplier = end($suppliers);
+      $nextAccNo = 'C' . str_pad(substr($lastSupplier->acc_no, 1) + 1, 5, '0', STR_PAD_LEFT);
+    } else { 
+      $nextAccNo = 'C00001';
+    }
     
-    // Get View
+    // Get Chart Of Accounts Dropdown List
+    $chartOfAccountsDropdown = new DropdownSelect(
+      'supplier[ledger_acc_id]', $model->listChartOfAccounts(), null, true, true, '- Select Ledger Account -');
+      
+    // Render view!
     include $app->partialsPath . '/head.html';
     include $view->partialFile($app->page->dir, $app->page->viewFilePath, 'html', 3, null, '        ');
     include $app->partialsPath . '/foot.html';

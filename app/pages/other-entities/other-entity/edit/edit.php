@@ -5,12 +5,20 @@
 
 
   // ----------------------
+  // ------ REQUEST -------
+  // ----------------------
+
+  $entity_id = array_get($_GET, 'id');
+
+
+
+  // ----------------------
   // -------- PAGE --------
   // ----------------------
 
   $page = new stdClass();
-  $page->breadcrumbs = ['Suppliers' => 'suppliers'];
-  $page->title = 'Edit Supplier';
+  $page->breadcrumbs = ['Other Entities' => 'other-entities'];
+  $page->title = 'Edit Transaction Entity';
   $page->dir = $app->controllerPath;
   $page->id = 'page_' . $app->currentPage;
   $page->state = $app->session->get($page->id, []);
@@ -27,22 +35,14 @@
 
 
   // ----------------------
-  // ------ REQUEST -------
-  // ----------------------
-
-  $supplier_id = array_get($_GET, 'id');
-
-
-
-  // ----------------------
   // -------- MODEL --------
   // ----------------------
 
   DB::connect($app->dbConnection);
 
   include $page->modelFilePath;
-  $model = new SupplierModel();
-  $supplier = $model->getSupplier($supplier_id);
+  $model = new EntityModel();
+  $entity = $model->getEntity($entity_id);
 
 
 
@@ -61,9 +61,9 @@
 
       $alerts[] = ['info', 'Hey, you posted some data with action: "' .  $request->action . '"', 0];
 
-      if ($request->action == 'update-supplier')
+      if ($request->action == 'update-entity')
       {
-        if ($model->updateSupplier($supplier_id, array_get($_POST, 'supplier', [])))
+        if ($model->updateEntity($entity_id, array_get($_POST, 'entity', [])))
         {
           $alerts[] = ['success', 'Update succesful.', 0];
         }
@@ -74,11 +74,11 @@
         break;
       }
 
-      if ($request->action == 'add-order-template')
+      if ($request->action == 'add-template')
       {
-        if ($model->addOrderTemplate($supplier_id, array_get($_POST, 'template', [])))
+        if ($model->addInvoiceTemplate($entity_id, array_get($_POST, 'template', [])))
         {
-          $alerts[] = ['success', 'Order template added.', 0];
+          $alerts[] = ['success', 'Invoice Template added.', 0];
         }
         else
         {
@@ -108,16 +108,16 @@
   // ----------------------
   else {
 
-    // Get supplier templates
-    $templates = $model->listSupplierTemplates($supplier_id);
-
+    // Get Entity Groups Dropdown List
+    $groupsDropdown = new DropdownSelect(
+      'entity[group_id]', $model->listEntityGroups(), $entity->group_id, true, true, '- Select Group -');
 
     // Get Chart Of Accounts Dropdown List
     $chartOfAccountsDropdown = new DropdownSelect(
-      'supplier[ledger_acc_id]', $model->listChartOfAccounts(), $supplier->ledger_acc_id,
-        true, true, '- Select Ledger Account -');
+      'entity[ledger_acc_id]', $model->listChartOfAccounts(), $entity->ledger_acc_id, 
+      true, true, '- Select Ledger Account -');
 
-    // Get View
+    // Render view!
     include $app->partialsPath . '/head.html';
     include $view->partialFile($app->page->dir, $app->page->viewFilePath, 'html', 3, null, '        ');
     include $app->partialsPath . '/foot.html';

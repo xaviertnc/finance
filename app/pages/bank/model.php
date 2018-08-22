@@ -3,6 +3,11 @@
 class BankModel
 {
 
+  public function getClient($client_id)
+  {
+    return DB::first('clients', 'WHERE id = ?', [$client_id]);
+  }
+  
   public function getInvoice($invoice_no)
   {
     return DB::first('invoices', 'WHERE invoice_no = ?', [$invoice_no]);
@@ -25,6 +30,12 @@ class BankModel
     return DB::query('clients')->getBy('id');
   }
 
+  
+  public function listSuppliers()
+  {
+    return DB::query('suppliers')->getBy('id');
+  }
+
 
   public function listStatuses()
   {
@@ -32,7 +43,25 @@ class BankModel
   }
 
 
-  public function listAccountNames()
+  public function listTransferEntities()
+  {
+    return DB::select('entities WHERE group_id=7');
+  }
+
+
+  public function listOtherEntities()
+  {
+    return DB::select('entities WHERE NOT group_id=7');
+  }
+  
+
+  public function listEntities()
+  {
+    return DB::query('entities')->getBy('id', 'name');
+  }
+
+  
+  public function listBankAccountNames()
   {
     return DB::query('bank_accounts')->getBy('short', 'description');
   }
@@ -46,7 +75,7 @@ class BankModel
 
   public function listChartOfAccounts()
   {
-    return DB::query('chart_of_accounts')->getBy('id', 'description');
+    return DB::query('chart_of_accounts')->getBy('id');
   }
   
 

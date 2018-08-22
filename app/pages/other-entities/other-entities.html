@@ -1,0 +1,84 @@
+<div class="entities">
+
+  <div class="action-bar text-right">
+    <button type="button" onclick="F1.modal.show('#add-entity', event)">+ Add Entity</button>
+  </div>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Acc No.</th>
+        <th>Name</th>
+        <th>Regex</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <?php foreach ($entities as $index => $entity): ?>
+      <tr>
+        <td><?=$index+1?></td>
+        <td><?=$entity->acc_no?></td>
+        <td><?=$entity->name?></td>
+        <td><?=$entity->regex?></td>
+        <td><a class="pagelink" href="other-entities/other-entity/edit?id=<?=$entity->id?>">Edit Entity</a></td>
+      </tr>
+      <?php endforeach; ?>
+      <?php if (empty($entities)):?>
+
+      <tr><td colspan="4">- None -</td></tr>
+      <?php endif; ?>
+    </tbody>
+  </table>
+
+  <!-- ADD CLIENT MODAL -->
+  <div id="add-entity" class="modal hidden">
+    <form method="POST" class="pjax">
+      <div class="modal-inner">
+        <header>
+          <a class="modal-close" href="#" onclick="F1.modal.dismiss(this, event)">Close X</a>
+        </header>
+        <br>
+        <div class="modal-content">
+          <fieldset>
+            <legend>New Entity</legend>
+            <div class="form-field">
+              <label>Account No.</label>
+              <input name="entity[acc_no]" value="<?=$nextAccNo?>" type="text">
+            </div>
+            <div class="form-field field-md">
+              <label>Name</label>
+              <input name="entity[name]" value="" type="text">
+            </div>
+            <div class="form-field field-md">
+              <label>Description</label>
+              <textarea name="entity[description]" rows="3"></textarea>
+            </div>
+            <div class="form-field field-md">
+              <label>Regex</label>
+              <textarea name="entity[regex]" rows="3"></textarea>
+            </div>            
+            <div class="form-field">
+              <label>Entity Group</label>
+              <?=$groupsDropdown?>
+            </div>
+            <div class="form-field">
+              <label>Entity Ledger Account</label>
+              <?=$chartOfAccountsDropdown?>
+            </div>
+            <div class="form-field">
+              <label>Credit Ledger Account?</label>
+              <input name="entity[debitCredit]" value="1" type="checkbox">
+            </div>
+          </fieldset>
+        </div>
+        <br>
+        <footer>
+          <div class="buttons-bar">
+            <button type="submit" name="add-entity">Add new entity</button>
+          </div>
+        </footer>
+      </form>
+    </div>
+  </div>
+
+</div>

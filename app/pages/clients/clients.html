@@ -9,18 +9,25 @@
         <th>#</th>
         <th>Acc No.</th>
         <th>Name</th>
+        <th>Regex</th>
         <th>Action</th>
       </tr>
     </thead>
     <tbody>
-      <?php foreach ($model->listClients() as $index => $client): ?>
+      <?php foreach ($clients as $index => $client): ?>
       <tr>
         <td><?=$index+1?></td>
         <td><?=$client->acc_no?></td>
         <td><?=$client->name?></td>
+        <td><?=$client->regex?></td>
         <td><a class="pagelink" href="clients/client/edit?id=<?=$client->id?>">Edit Client</a></td>
       </tr>
       <?php endforeach; ?>
+      <?php if (empty($clients)):?>
+      
+      <tr><td colspan="5">- None -</td></tr>
+      <?php endif; ?>
+      
     </tbody>
   </table>
   
@@ -37,12 +44,24 @@
             <legend>New Client</legend>
             <div class="form-field">
               <label>Account No.</label>
-              <input name="client[acc_no]" value="" type="text">
+              <input name="client[acc_no]" value="<?=$nextAccNo?>" type="text">
             </div>
-            <div class="form-field">
-              <label>Company Name</label>
+            <div class="form-field field-md">
+              <label>Name</label>
               <input name="client[name]" value="" type="text">
             </div>
+            <div class="form-field field-md">
+              <label>Description</label>
+              <textarea name="client[description]" rows="3"></textarea>
+            </div>
+            <div class="form-field field-md">
+              <label>ID regex</label>
+              <textarea name="client[regex]" rows="3"></textarea>
+            </div>
+            <div class="form-field">
+              <label>Ledger Account</label>
+              <?=$chartOfAccountsDropdown?>
+            </div>            
           </fieldset>          
         </div>
         <br>

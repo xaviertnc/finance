@@ -10,3 +10,6 @@ CREATE TABLE `bank_acc_wcit` (
   `doc_id` int NOT NULL,
   `split_id` int NOT NULL
 );
+
+
+UPDATE `bank_acc_wcit` SET ledger_acc_id = 0, status_id = 0, entity_id = 0;

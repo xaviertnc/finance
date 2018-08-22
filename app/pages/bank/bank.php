@@ -3,7 +3,22 @@
   include $app->componentsPath . '/SelectListItem.php';
   include $app->componentsPath . '/DropdownSelect.php';
 
+  function getTrxEntityName($clients, $suppliers, $entities, $trx)
+  {
+    if ($trx->entity_group_id == 1) {
+      $client = array_get($clients, $trx->entity_id);
+      return $client ? $client->name : '-';
+    }
+    if ($trx->entity_group_id == 2) {
+      $supplier = array_get($suppliers, $trx->entity_id);
+      return $supplier ? $supplier->name : '-';
+    }    
+    $entity = array_get($entities, $trx->entity_id);
+    return $entity ?: '-';
+  }
+  
 
+  
   // ----------------------
   // ------ REQUEST -------
   // ----------------------
@@ -46,8 +61,8 @@
   $model = new BankModel();
 
   // Get account names
-  $accountNames = $model->listAccountNames();
-  $accountShortNames = array_keys($accountNames);
+  $bankAccountNames = $model->listBankAccountNames();
+  $accountShortNames = array_keys($bankAccountNames);
   if ( ! $accShortName) { $accShortName = reset($accountShortNames); }
 
   // Get transactions
@@ -76,57 +91,144 @@
       if ($request->action == 'run-auto-detect')
       {
         $alerts[] = ['warning', 'Lekker manne, kom ons looi daai ding.', 0];
+
+        // Note: Db/Cr can be determined from the sign of the trx amount! The sign dictates
+        // Db or Cr on the current account and the reverse on the ledger acc.
+
+        // Get chart_of_accounts
+        $chart_of_accounts = $model->listChartOfAccounts();
+
+        // Get bank-transfer entities
+        $transferEntities = $model->listTransferEntities();
         
-        foreach ($transactions as $trx) {
-          $regex = '/IN(\d{5,6})/i';
-          if (preg_match($regex, $trx->description, $matches)) {
-            $invoice_no = $matches[1];
-            $app->log->bank_detect('matches = ' . print_r($matches, true));
-            $invoice = $model->getInvoice($invoice_no);            
-            $model->updateBankTrx($accShortName, $trx->id, [
-              'entity_id'      => $invoice->client_id,
-              'category_id'    => 4,   // Revenue
-              'subcategory_id' => 29,  // Sales
-              'ledger_acc_id'  => 128, // Sales - General
-              'status_id'      => 1    // INxxxx Assign
-            ]);
+        // Detect Bank Transfers FIRST
+        foreach ($transactions as $trx)
+        {
+          foreach ($transferEntities as $entity)
+          {
+            if (preg_match($entity->regex, $trx->description))
+            {
+              $app->log->bank_detect('Found transfer from: ' . $entity->name);
+              $ledger_acc = array_get($chart_of_accounts, $entity->ledger_acc_id);
+              $model->updateBankTrx($accShortName, $trx->id, [
+                'entity_group_id' => $entity->group_id,
+                'entity_id'       => $entity->id,
+                'category_id'     => $ledger_acc->category_id,
+                'subcategory_id'  => $ledger_acc->subcategory_id,
+                'ledger_acc_id'   => $ledger_acc->id,
+                'status_id'       => 1 // TRF assign
+              ]);
+            }
           }
         }
-        
+
+        // Clients by INxxx
         foreach ($transactions as $trx) {
           if ($trx->ledger_acc_id) { continue; }
-          $regex = '/D\d{5}/i';
+          $regex = '/IN(?:V|O)?\s*(\d{5,6})/i';
           if (preg_match($regex, $trx->description, $matches)) {
-            $client_acc_no = $matches[0];
+            $invoice_no = (int) $matches[1];
             $app->log->bank_detect('matches = ' . print_r($matches, true));
-            $client = $model->getClientByAccNo($client_acc_no);            
+            $invoice = $model->getInvoice($invoice_no);
+            $entity = $model->getClient($invoice->client_id);
+            if ( ! $entity) { continue; }
+            $ledger_acc = array_get($chart_of_accounts, $entity->ledger_acc_id?:143);
             $model->updateBankTrx($accShortName, $trx->id, [
-              'entity_id'      => $client->id,
-              'category_id'    => 4,   // Revenue
-              'subcategory_id' => 29,  // Sales
-              'ledger_acc_id'  => 128, // Sales - General
-              'status_id'      => 2    // Dxxxx Assign
+              'entity_group_id' => 1, // Clients
+              'entity_id'       => $entity->id,
+              'category_id'     => $ledger_acc->category_id,
+              'subcategory_id'  => $ledger_acc->subcategory_id,
+              'ledger_acc_id'   => $ledger_acc->id,
+              'status_id'       => 2 // INxxxx Assign
             ]);
           }
         }
         
+        // Clients by Dxxx
+        foreach ($transactions as $trx) {
+          if ($trx->ledger_acc_id) { continue; }
+          $regex = '/D\s*\d{5}/i';
+          if (preg_match($regex, $trx->description, $matches)) {
+            $client_acc_no = $matches[0];
+            str_replace(' ', '', $client_acc_no);
+            $app->log->bank_detect('matches = ' . print_r($matches, true));
+            $entity = $model->getClientByAccNo($client_acc_no);
+            if ( ! $entity) { continue; }
+            $ledger_acc = array_get($chart_of_accounts, $entity->ledger_acc_id?:143);            
+            $model->updateBankTrx($accShortName, $trx->id, [
+              'entity_group_id' => 1, // Clients
+              'entity_id'       => $entity->id,
+              'category_id'     => $ledger_acc->category_id,
+              'subcategory_id'  => $ledger_acc->subcategory_id,
+              'ledger_acc_id'   => $ledger_acc->id,
+              'status_id'       => 3 // Dxxxx Assign
+            ]);
+          }
+        }
+        
+        // Clients By RegEx
         $clients = $model->listClients();
-        foreach ($clients as $client) {
-          $regex = $client->regex;
+        foreach ($clients as $entity) {
+          $regex = $entity->regex;
           if ( ! $regex) { continue; }
           foreach ($transactions as $trx) {
             if ($trx->ledger_acc_id) { continue; }
             if (preg_match($regex, $trx->description)) {
+              $ledger_acc = array_get($chart_of_accounts, $entity->ledger_acc_id?:143); // 143 = Sales - General
               $model->updateBankTrx($accShortName, $trx->id, [
-                'entity_id'      => $client->id,
-                'category_id'    => 4,   // Revenue
-                'subcategory_id' => 29,  // Sales
-                'ledger_acc_id'  => 128, // Sales - General
-                'status_id'      => 3    // Regex Assign
+                'entity_group_id' => 1, // Clients
+                'entity_id'       => $entity->id,
+                'category_id'     => $ledger_acc->category_id,
+                'subcategory_id'  => $ledger_acc->subcategory_id,
+                'ledger_acc_id'   => $ledger_acc->id,
+                'status_id'       => 4 // Regex Assign (Client)
               ]);
             } 
           }
         }
+        
+        // Suppliers By RegEx
+        $suppliers = $model->listSuppliers();
+        foreach ($suppliers as $entity) {
+          $regex = $entity->regex;
+          if ( ! $regex) { continue; }
+          foreach ($transactions as $trx) {
+            if ($trx->ledger_acc_id) { continue; }
+            if ($entity->ledger_acc_id and preg_match($regex, $trx->description)) {
+              $ledger_acc = array_get($chart_of_accounts, $entity->ledger_acc_id?:187); // 187 = Cost of Sales - General 
+              $model->updateBankTrx($accShortName, $trx->id, [
+                'entity_group_id' => 2, // Suppliers
+                'entity_id'       => $entity->id,
+                'category_id'     => $ledger_acc->category_id,
+                'subcategory_id'  => $ledger_acc->subcategory_id,
+                'ledger_acc_id'   => $ledger_acc->id,
+                'status_id'       => 5 // Regex Assign (Supplier)
+              ]);
+            } 
+          }
+        }
+        
+        // Other Entities By RegEx
+        $otherEntities = $model->listOtherEntities();
+        foreach ($otherEntities as $entity) {
+          $regex = $entity->regex;
+          if ( ! $regex) { continue; }
+          foreach ($transactions as $trx) {
+            if ($trx->ledger_acc_id) { continue; }
+            $ledger_acc = array_get($chart_of_accounts, $entity->ledger_acc_id);
+            if (preg_match($regex, $trx->description)) {
+              $model->updateBankTrx($accShortName, $trx->id, [
+                'entity_group_id' => $entity->group_id,
+                'entity_id'       => $entity->id,
+                'category_id'     => $ledger_acc->category_id,
+                'subcategory_id'  => $ledger_acc->subcategory_id,
+                'ledger_acc_id'   => $ledger_acc->id,
+                'status_id'       => 6 // Regex Assign (Other)
+              ]);
+            } 
+          }
+        }
+        
         break;
       }
       
@@ -158,12 +260,17 @@
   else {
     
     $clients = $model->listClients();
+    
+    $suppliers = $model->listSuppliers();
+    
+    $entities = $model->listEntities();
+    
     $trx_statuses = $model->listStatuses();
     // $acc_subcategories = $model->listAccSubCategories();
     $chart_of_accounts = $model->listChartOfAccounts();
 
     // Get Bank Accounts Dropdown
-    $accNamesDropdown = new DropdownSelect('acc', $accountNames, $accShortName, true, true, '- Select Account -');
+    $accNamesDropdown = new DropdownSelect('acc', $bankAccountNames, $accShortName, true, true, '- Select Account -');
 
     // Get Months Dropdown
     include $app->modelsPath . '/collections/TaxMonths.php';

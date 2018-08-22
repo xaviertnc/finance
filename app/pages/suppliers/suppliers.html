@@ -8,18 +8,25 @@
       <tr>
         <th>Acc No.</th>
         <th>Name</th>
+        <th>Regex</th>
         <th>Action</th>
       </tr>
     </thead>
     <tbody>
       <?php foreach ($suppliers as $supplier): ?>
+      
       <tr>
-        <td><?=$supplier->supplier_no?></td>
+        <td><?=$supplier->acc_no?></td>
         <td><?=$supplier->name?></td>
+        <td><?=$supplier->regex?></td>
         <td><a class="pagelink" href="suppliers/supplier/edit?id=<?=$supplier->id?>">Edit Supplier</a></td>
       </tr>
       <?php endforeach; ?>
-      <?php if (empty($suppliers)):?><tr><td colspan="3">- None -</td></tr><?php endif; ?>
+      <?php if (empty($suppliers)):?>
+      
+      <tr><td colspan="4">- None -</td></tr>
+      <?php endif; ?>
+      
     </tbody>
   </table>
   
@@ -35,13 +42,25 @@
           <fieldset>
             <legend>New Supplier</legend>
             <div class="form-field">
-              <label>Supplier No.</label>
-              <input name="supplier[supplier_no]" value="" type="text">
+              <label>Acc No.</label>
+              <input name="supplier[acc_no]" value="<?=$nextAccNo?>" type="text">
             </div>
             <div class="form-field">
-              <label>Supplier Name</label>
+              <label>Name</label>
               <input name="supplier[name]" value="" type="text">
             </div>
+            <div class="form-field field-md">
+              <label>Description</label>
+              <textarea name="supplier[description]" rows="3"></textarea>
+            </div>             
+            <div class="form-field field-md">
+              <label>Regex</label>
+              <textarea name="supplier[regex]" rows="3"></textarea>
+            </div>             
+            <div class="form-field">
+              <label>Ledger Account</label>
+              <?=$chartOfAccountsDropdown?>
+            </div>            
           </fieldset>          
         </div>
         <br>

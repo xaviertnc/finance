@@ -1,6 +1,12 @@
 <?php
 
-  DB::connect($app->dbConnection);
+  include $app->componentsPath . '/SelectListItem.php';
+  include $app->componentsPath . '/DropdownSelect.php';
+
+
+  // ----------------------
+  // -------- PAGE --------
+  // ----------------------
   
   $page = new stdClass();
   $page->title = 'Clients';
@@ -17,11 +23,23 @@
 
   $app->page = $page;
   
+  
 
+  // ----------------------
+  // -------- MODEL --------
+  // ----------------------
+  
+  DB::connect($app->dbConnection);
+  
+  include $page->modelFilePath;
+  $model = new ClientsModel();
+
+  
   
   // ----------------------
   // -------- POST --------
   // ----------------------
+  
   if ($request->method == 'POST')
   {
     do {
@@ -59,11 +77,23 @@
   // ----------------------
   // -------- GET ---------
   // ----------------------
+  
   else {
 
     // Get Model
-    include $page->modelFilePath;
-    $model = new ClientsModel();
+    $clients = $model->listClients();
+    
+    // Get next client account number
+    if ($clients) {
+      $lastClient = end($clients);
+      $nextAccNo = 'D' . str_pad(substr($lastClient->acc_no, 1) + 1, 5, '0', STR_PAD_LEFT);
+    } else {
+      $nextAccNo = 'D00001';
+    }
+    
+    // Get Chart Of Accounts Dropdown List
+    $chartOfAccountsDropdown = new DropdownSelect(
+      'client[ledger_acc_id]', $model->listChartOfAccounts(), null, true, true, '- Select Ledger Account -');    
     
     // Get View
     include $app->partialsPath . '/head.html';

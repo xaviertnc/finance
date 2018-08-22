@@ -5,50 +5,27 @@
       <fieldset class="clearfix">
         <div class="column">
           <div class="form-field">
+            <label>Account no.</label>
+            <input name="client[acc_no]" value="<?=$client->acc_no?>" type="text">
+          </div>
+          <div class="form-field field-md">
             <label>Name</label>
             <input name="client[name]" value="<?=$client->name?>" type="text">
           </div>
-          <div class="form-field">
-            <label>VAT Number</label>
-            <input name="client[vat_number]" value="<?=$client->vat_number?>" type="text">
-          </div>          
           <div class="form-field field-md">
             <label>Contact</label>
             <input name="client[contact]" value="<?=$client->contact?>" type="text">
           </div>
           <div class="form-field field-md">
-            <label>Website</label>
-            <input name="client[website]" value="<?=$client->website?>" type="text">
-          </div>
-          <div class="form-field field-md">
-            <label>Email</label>
-            <textarea name="client[email]" rows="3"><?=
-              str_replace(';', ';'.PHP_EOL, str_replace(' ', '', $client->email))?></textarea>
-          </div>
-          <div class="form-field field-md">
-            <label>CRM Notes</label>
-            <textarea name="client[invoice_note]" rows="3"><?=$client->crm_notes?></textarea>
-          </div>
-          <div class="form-field field-md">
-            <label>Invoice Note</label>
-            <textarea name="client[invoice_note]" rows="3"><?=$client->invoice_note?></textarea>
-          </div>
-          <div class="form-field field-md">
-            <label>ID regex</label>
-            <textarea name="client[regex]" rows="3"><?=$client->regex?></textarea>
-          </div>          
-        </div>
-        <div class="column">
-          <div class="form-field">
-            <label>Account no.</label>
-            <input name="client[acc_no]" value="<?=$client->acc_no?>" type="text">
+            <label>Description</label>
+            <textarea name="client[description]" rows="2"><?=$client->description?></textarea>
           </div>
           <div class="form-field">
-            <label>Cellphone</label>
+            <label>Cell</label>
             <input name="client[cell]" value="<?=$client->cell?>" type="text">
           </div>
           <div class="form-field">
-            <label>Telephone</label>
+            <label>Tel</label>
             <input name="client[tel]" value="<?=$client->tel?>" type="text">
           </div>
           <div class="form-field">
@@ -56,21 +33,52 @@
             <input name="client[fax]" value="<?=$client->fax?>" type="text">
           </div>
           <div class="form-field field-md">
-            <label>Street Address</label>
-            <textarea name="client[street_addr]" rows="3"><?=$client->street_addr?></textarea>
+            <label>Email</label>
+            <textarea name="client[email]" rows="2"><?=
+              str_replace(';', ';'.PHP_EOL, str_replace(' ', '', $client->email))?></textarea>
           </div>
           <div class="form-field field-md">
-            <label>Postal Address</label>
-            <textarea name="client[postal_addr]" rows="3"><?=$client->postal_addr?></textarea>
+            <label>Website</label>
+            <input name="client[website]" value="<?=$client->website?>" type="text">
           </div>
           <div class="form-field field-md">
-            <label>Delivery Address</label>
-            <textarea name="client[delivery_addr]" rows="3"><?=$client->delivery_addr?></textarea>
-          </div>  
+            <label>ID regex</label>
+            <textarea name="client[regex]" rows="2"><?=$client->regex?></textarea>
+          </div>
+        </div>
+        <div class="column">
           <div class="form-field">
             <label>Labour / Hour</label>
             <input name="client[labour_per_hour]" value="<?=$client->labour_per_hour?>" type="text">
-          </div>            
+          </div>
+          <div class="form-field">
+            <label>VAT No.</label>
+            <input name="client[vat_number]" value="<?=$client->vat_number?>" type="text">
+          </div>
+          <div class="form-field">
+            <label>Ledger Acc.</label>
+            <?=$chartOfAccountsDropdown?>
+          </div>          
+          <div class="form-field field-md">
+            <label>Street Addr</label>
+            <textarea name="client[street_addr]" rows="3"><?=$client->street_addr?></textarea>
+          </div>
+          <div class="form-field field-md">
+            <label>Postal Addr</label>
+            <textarea name="client[postal_addr]" rows="3"><?=$client->postal_addr?></textarea>
+          </div>
+          <div class="form-field field-md">
+            <label>Delivery Addr</label>
+            <textarea name="client[delivery_addr]" rows="3"><?=$client->delivery_addr?></textarea>
+          </div>
+          <div class="form-field field-md">
+            <label>Invoice Note</label>
+            <textarea name="client[invoice_note]" rows="3"><?=$client->invoice_note?></textarea>
+          </div>
+        </div>
+        <div class="row form-field">
+          <label>CRM Notes</label>
+          <textarea style="width:100%" name="client[crm_notes]" rows="3"><?=$client->crm_notes?></textarea>
         </div>
         <div class="row">
           <button type="submit" name="update-client">Update client</button>

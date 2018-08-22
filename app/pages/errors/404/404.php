@@ -1,7 +1,7 @@
 <?php
 
   $page = new stdClass();
-  $page->title = 'Error 404';
+  $page->title = 'Error 404 <small>(Page Not Found)</small>';
   $page->dir = $app->controllerPath;
   $page->id = 'page_' . $app->currentPage;
   $page->state = $app->session->get($page->id, []);
