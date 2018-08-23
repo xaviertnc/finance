@@ -31,7 +31,7 @@
     
       <tr>
         <td><?=$trx->date?></td>
-        <td><?=$trx->description?></td>
+        <td class="desc" title="<?=$trx->description?>"><?=$trx->description?></td>
         <td class="entity"><?=getTrxEntityName($clients, $suppliers, $entities, $trx)?></td>
         <td class="text-right blue"><?=$trx->amount > 0 ? Format::currency($trx->amount, 0, 2) : ''?></td>
         <td class="text-right red"><?=$trx->amount <= 0 ? '-'.Format::currency(abs($trx->amount), 0, 2) : ''?></td>

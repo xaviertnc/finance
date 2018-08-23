@@ -4,6 +4,9 @@ require $app->vendorsPath . '/Xap/Engine.php';
 require $app->vendorsPath . '/OneFile/DbQuery.php';
 
 use Xap\Engine as Xap;
+use Xap\Pagination;
+use Xap\Cache;
+
 use OneFile\DbQuery;
 
 
@@ -101,10 +104,10 @@ class DB
     return Xap::exec([':classname', [$classname]]);
   }
 
-  public static function setPagination($page, $rpp = null, $prevStr = 'Prev', $nextStr = 'Next')
+  public static function setPagination($page, $itemspp = null, $prevStr = 'Prev', $nextStr = 'Next')
   {
     $arguments = ['page' => $page, 'prev_string' => $prevStr, 'next_string' => $nextStr];
-    if ($rpp) { $arguments['rpp'] = $rpp; }
+    if ($itemspp) { $arguments['rpp'] = $itemspp; }
     return Xap::exec([':pagination', $arguments]);
   }
 
@@ -172,12 +175,15 @@ class DB
   // NB: It goes without saying.. DON'T add a LIMIT clause to an auto paginated query!
   //
   // Examples:
-  // DB::paginate('users.12', $page, $itemspp);
-  // DB::paginate('users(id, name) WHERE name=?', [$name], $page, $itemspp, 'Before', 'After');
-  public static function paginate($query, $arguments = null, $page = 1, $rpp = 7, $prevStr = 'Prev', $nextStr = 'Next')
+  // DB::paginate('users.12', null, null, $page, $itemspp);
+  // DB::paginate('users(id, name)', 'WHERE name=?', [$name], $page, $itemspp, 'Before', 'After');
+  public static function paginate($table, $conditions, $arguments = null, $page = 1, $rpp = 7, $prevStr = 'Prev', $nextStr = 'Next')
   {
+    Pagination::$conf_page_get_var = 'page';
     static::setPagination($page, $rpp, $prevStr, $nextStr);
-    return Xap::exec(["$query/pagination", $arguments]);
+    // print_r($arguments);
+    // die();
+    return Xap::exec(["$table/pagination $conditions", $arguments]);
   }
 
   // DB::first('users', 'WHERE name=?', [$name]);
@@ -275,14 +281,33 @@ class DB
     return Xap::exec([$tableName . ':columns']);
   }
 
-  // private static function getExecuteQueryFn()
-  // {
-    // return function($sql, $params) { return DB::select($sql, $params); };
-  // }
-
+  // DB::query('invoices')
+  //  ->where('invoice_no', 'LIKE', '%123%', ['ignore' => [null, 0]])
+  //  ->get();                                  // Get all with all fields
+  //  ->get('id,invoice_no,description');       // Get all with only selected fields
+  //  ->getBy('id', 'invoice_no,description');  // Get all indexed by id and with only selected fields 
+  //  ->getBy('id');                            // Get all indexed by id with all fields
+  //  ->count();                                // Get count only (For pagination) 
   public static function query($tableName)
   {
-    $q = new DbQuery(function($sql, $params) { return DB::select($sql, $params); });
+    $q = new DbQuery(
+      // The function to execute the generated WHERE SQL and PARAMS with the DB engine of choice.
+      function($queryType, $tableName, $whereSql, $whereParams, $extraArgs)
+      {
+        switch($queryType)
+        {
+          case 'count':
+            return DB::count($tableName, $whereSql, $whereParams);
+            
+          case 'paginate': 
+            // $extraArgs: 0 = page, 1 = rows per page
+            return DB::paginate($tableName, $whereSql, $whereParams, $extraArgs[0], $extraArgs[1]);
+            
+          default:
+            return DB::select("$tableName $whereSql", $whereParams);
+        }
+      }
+    );
     return $q->from($tableName);
   }
 

@@ -1,0 +1,6 @@
+/* Page Styles Go Here... */
+th { padding: 0.1em 1em; text-align: left; }
+td { padding: 0.1em 1em; }
+.pager a { display: inline-block; padding: 1em 0.5em; }
+.form-field { margin-bottom: 1em; }
+.form-field label { width: 8em; }

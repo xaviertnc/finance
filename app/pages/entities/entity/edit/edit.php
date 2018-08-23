@@ -5,13 +5,22 @@
 
 
   // ----------------------
+  // ------ REQUEST -------
+  // ----------------------
+
+  $entity_id = array_get($_GET, 'id');
+
+
+
+  // ----------------------
   // -------- PAGE --------
   // ----------------------
-  
+
   $page = new stdClass();
-  $page->title = 'Clients';
+  $page->breadcrumbs = ['Transaction Entities' => 'entities'];
+  $page->title = 'Edit Entity';
   $page->dir = $app->controllerPath;
-  $page->id = 'page_' . $app->currentPage;  
+  $page->id = 'page_' . $app->currentPage;
   $page->state = $app->session->get($page->id, []);
   $page->errors = $app->session->get('errors', []);
   $page->alerts = $app->session->get('alerts', []);
@@ -22,24 +31,24 @@
   $page->csrfToken = md5(uniqid(rand(), true)); //time();
 
   $app->page = $page;
-  
-  
+
+
 
   // ----------------------
   // -------- MODEL --------
   // ----------------------
-  
-  DB::connect($app->dbConnection);
-  
-  include $page->modelFilePath;
-  $model = new ClientsModel();
 
-  
-  
+  DB::connect($app->dbConnection);
+
+  include $page->modelFilePath;
+  $model = new EntityModel();
+  $entity = $model->getEntity($entity_id);
+
+
+
   // ----------------------
   // -------- POST --------
   // ----------------------
-  
   if ($request->method == 'POST')
   {
     do {
@@ -50,11 +59,18 @@
       $request->action = array_get($_POST, '__ACTION__');
       $request->params = array_get($_POST, '__PARAMS__');
 
-      $alerts[] = ['info', 'Hey, you posted some data.', 3000];
+      $alerts[] = ['info', 'Hey, you posted some data with action: "' .  $request->action . '"', 0];
 
-      if ($request->action == 'add-client') {
-        $model->insertClient(array_get($_POST, 'client'));
-        $alerts[] = ['success', 'Congrats on a nice new client!', 5000];
+      if ($request->action == 'update-entity')
+      {
+        if ($model->updateEntity($entity_id, array_get($_POST, 'entity', [])))
+        {
+          $alerts[] = ['success', 'Update succesful.', 0];
+        }
+        else
+        {
+          $alerts[] = ['danger', 'Oops, something went wrong!', 0];
+        }
         break;
       }
 
@@ -64,38 +80,31 @@
       }
 
     } while (0);
-    
+
     // FLASH Messages
     $app->session->put('errors', $errors);
     $app->session->put('alerts', $alerts);
-    
+
     $response->redirectTo = $request->back ?: $request->uri;
   }
 
 
-  
+
   // ----------------------
   // -------- GET ---------
   // ----------------------
-  
   else {
 
-    // Get Model
-    $clients = $model->listClients();
-    
-    // Get next client account number
-    if ($clients) {
-      $lastClient = end($clients);
-      $nextAccNo = 'D' . str_pad(substr($lastClient->acc_no, 1) + 1, 5, '0', STR_PAD_LEFT);
-    } else {
-      $nextAccNo = 'D00001';
-    }
-    
+    // Get Entity Groups Dropdown List
+    $groupsDropdown = new DropdownSelect(
+      'entity[group_id]', $model->listEntityGroups(), $entity->group_id, true, true, '- Select Group -');
+
     // Get Chart Of Accounts Dropdown List
     $chartOfAccountsDropdown = new DropdownSelect(
-      'client[ledger_acc_id]', $model->listChartOfAccounts(), null, true, true, '- Select Ledger Account -');    
-    
-    // Get View
+      'entity[ledger_acc_id]', $model->listChartOfAccounts(), $entity->ledger_acc_id, 
+      true, true, '- Select Ledger Account -');
+
+    // Render view!
     include $app->partialsPath . '/head.html';
     include $view->partialFile($app->page->dir, $app->page->viewFilePath, 'html', 3, null, '        ');
     include $app->partialsPath . '/foot.html';

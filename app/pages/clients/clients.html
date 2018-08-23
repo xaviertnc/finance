@@ -19,7 +19,7 @@
         <td><?=$index+1?></td>
         <td><?=$client->acc_no?></td>
         <td><?=$client->name?></td>
-        <td><?=$client->regex?></td>
+        <td><?=htmlentities($client->regex)?></td>
         <td><a class="pagelink" href="clients/client/edit?id=<?=$client->id?>">Edit Client</a></td>
       </tr>
       <?php endforeach; ?>

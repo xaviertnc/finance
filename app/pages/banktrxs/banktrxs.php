@@ -150,9 +150,10 @@
           $regex = '/D\s*\d{5}/i';
           if (preg_match($regex, $trx->description, $matches)) {
             $client_acc_no = $matches[0];
-            str_replace(' ', '', $client_acc_no);
-            $app->log->bank_detect('matches = ' . print_r($matches, true));
+            $client_acc_no = str_replace(' ', '', $client_acc_no);
+            $app->log->bank_detect('matches = ' . print_r($matches, true) . ', acc_no = ' . $client_acc_no);
             $entity = $model->getClientByAccNo($client_acc_no);
+            // $app->log->bank_detect('entity = ' . print_r($entity, true));
             if ( ! $entity) { continue; }
             $ledger_acc = array_get($chart_of_accounts, $entity->ledger_acc_id?:143);            
             $model->updateBankTrx($accShortName, $trx->id, [

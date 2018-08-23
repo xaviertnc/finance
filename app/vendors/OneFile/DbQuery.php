@@ -25,7 +25,7 @@ use Exception;
  *    ->where('date', 'BETWEEN', [$fromDate, $toDate], ['ignore'=>[0, null]])
  *    ->orWhere())
  *
- * ->orWhere('name', '%LIKE%', $name, ['ignore'=>[null]])
+ * ->orWhere('name', 'LIKE', $name ? "%$name%" : null, ['ignore'=>null])
  *
  * ->orderBy([$colA => $colAdir, $colB => $colBdir])
  *
@@ -39,7 +39,7 @@ use Exception;
  * ->get('id,desc');
  *
  */
- 
+
 class DbQuery
 {
 
@@ -54,31 +54,33 @@ class DbQuery
 
   private function getExecuteCallback()
   {
-    return function ($resultsFormat = null, $tableName = null, $sql = null, $params = null, $args = null)
+    return function ($queryType = null, $tableName = null, $whereSql = null, $whereParams = null, $extraArgs = null)
     {
-      $sql = $tableName . ($sql ? " WHERE $sql" : '');
-      
-      $results = call_user_func($this->executeQueryFn, $sql, $params);
-      
-      if ($resultsFormat == 'getBy')
+      $results = call_user_func($this->executeQueryFn, $queryType, $tableName, $whereSql, $whereParams, $extraArgs);
+
+      if ($queryType == 'getBy')
       {
         $lookup = array();
-        $id_column = isset($args[0]) ? $args[0] : 'id';
-        $display_column = isset($args[1]) ? $args[1] : null;
-        $idDecorator = isset($args[2]) ? $args[2] : null; // e.g. 'item_%s'
-        $isMultiColumnDisp = is_array($display_column);
+        $id_column = isset($extraArgs[0]) ? $extraArgs[0] : 'id';
+        $display_columns = isset($extraArgs[1]) ? explode(',', $extraArgs[1]) : array();
+        $idDecorator = isset($extraArgs[2]) ? $extraArgs[2] : null; // e.g. 'item_%s'
+        $isMultiColumnDisp = count($display_columns) > 1;
         foreach ($results?:array() as $result)
         {
           if ($isMultiColumnDisp)
           {
-            $displayValue = array();
-            // $display_column == array: index only the record fields specified (object)
-            foreach ($display_column as $column_name) $displayValue[$column_name] = $result->{$column_name};
+            $displayValue = new \stdClass();
+            // $display_columns == array: index only the record fields specified
+            foreach ($display_columns as $column_name)
+            {
+              $column_name = trim($column_name);
+              $displayValue->{$column_name} = $result->{$column_name};
+            }
           }
-          elseif($display_column)
+          elseif($display_columns)
           {
             // $display_column == string: index a single value (scalar)
-            $displayValue = $result->{$display_column};
+            $displayValue = $result->{$display_columns[0]};
           }
           else
           {
@@ -101,7 +103,6 @@ class DbQuery
 
   public function from($tableName)
   {
-    // Log::DbQuery('DbQuery::from(' . $tableName . '), Start');
     return new QueryStatement($tableName, $this->getExecuteCallback());
   }
 
@@ -126,10 +127,10 @@ class DbQuery
  *   - Moved to OneFile 24 Jan 2017
  *
  */
- 
+
 class QueryExpression
 {
-  
+
   protected $leftArg;
   protected $operator;
   protected $rightArg;
@@ -160,18 +161,21 @@ class QueryExpression
 
     switch (strtoupper($this->operator))
     {
+      
+      case 'BETWEEN':
+        $params = array_merge($params, $this->rightArg);
+        return "$glue ({$this->leftArg} BETWEEN ? AND ?)";
+        
       default:
-
         if (isset($this->rightArg))
         {
           $params[] = $this->rightArg;
-          return $glue . $this->leftArg . $this->operator . '?';
+          return $glue . $this->leftArg . ' ' . $this->operator . ' ?';
         }
-
         return $glue . $this->leftArg . ' ' . $this->operator;
     }
   }
-  
+
 }
 
 
@@ -181,7 +185,7 @@ class QueryExpression
  * Query Statement Class
  *
  */
- 
+
 class QueryStatement
 {
 
@@ -206,15 +210,26 @@ class QueryStatement
     {
       $options = array();
     }
-    
-    if (isset($options['ignore']))
+
+    if (array_key_exists('ignore', $options))
     {
       $values_to_ignore = $options['ignore'];
-      if (in_array($rightArg, $values_to_ignore)) return $this;
+      if ( ! is_array($values_to_ignore))
+      {
+        $values_to_ignore = array($values_to_ignore);
+      }
+      $params = is_array($rightArg) ? $rightArg : array($rightArg);
+      foreach ($params as $param)
+      {
+        if (in_array($param, $values_to_ignore))
+        {
+          return $this;
+        }
+      }
       //unset($options['ignore']);
     }
 
-    if ($glue and ! $this->expressions) $glue = null;
+    if ($glue and ! $this->expressions) { $glue = null; }
 
     $this->expressions[] = new QueryExpression(
       $leftArg,
@@ -246,8 +261,10 @@ class QueryStatement
    * If $orderBy is an array or multi-array, assume that it contains multiple order statements.
    * The addition of order statements should be handled outside the scope of this class.
    *
-   * @param mixed $orderBy String / Array / Multi-Array. E.g. $orderBy = "amount desc";
-   *   ['amount desc', 'time asc']; [['amount'=>'desc'],['time'=>'asc']]
+   * @param mixed $orderBy String / Array / Multi-Array. 
+   *   E.g. $orderBy = 'amount desc' or
+   *        $orderBy = ['amount desc', 'time asc'] or 
+   *        $orderBy = [['amount'=>'desc'],['time'=>'asc']]
    *
    * @return Statement
    */
@@ -277,6 +294,7 @@ class QueryStatement
   {
     $sql = '';
     foreach ($this->expressions?:array() as $expression) $sql .= $expression->build($params);
+    if ($sql) { $sql = 'WHERE ' . $sql; }
     if ($this->orderBy) $sql .= $this->orderBy;
     if ($this->limit) $sql .= $this->limit;
     return $sql;
@@ -288,11 +306,13 @@ class QueryStatement
    *
    * Calls $this->executeCallback (injected on instantiation) to allow the user to execute
    * the query created, using their own DB framework. The callback also allows the user to process
-   * the results before delivery according to the name under which the callback was invoked!
+   * the results before delivery according to the name under which the callback was invoked.
    *
    * E.g.
    * ->get()
    * ->getBy()
+   * ->paginate()
+   * ->count()
    *
    * @param string $method Whatever the user wants to name this call for results.
    *   e.g. getIndexed, fetchResults, etc.
@@ -302,7 +322,6 @@ class QueryStatement
    */
   public function __call($method, $arguments)
   {
-    // Log::DbQuery("QueryStatement::call($method), args: " . json_encode($arguments?:'none'));
     if ( ! $this->tableName)
     {
       throw new Exception("Results call: $method not allowed on a query substatement!");

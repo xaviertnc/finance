@@ -1,0 +1,88 @@
+<div class="invoices">
+
+  <div class="row clearfix">
+    <form class="pull-left" method="GET">
+      <span class="form-field">
+        <b>InvNo:</b>
+        <input name="invno" value="<?=array_get($_GET, 'invno')?>" style="width:80px" type="text">
+        &nbsp;&nbsp;
+        <b>Title:</b>
+        <input name="title" value="<?=array_get($_GET, 'title')?>" type="text">        
+      </span>
+      <button type="submit">Search</button>
+    </form>
+    <button class="pull-right" type="button" onclick="F1.modal.show('#add-invoice', event)">+ Add Invoice</button>
+  </div>
+  <hr>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Inv No.</th>
+        <th>Date</th>
+        <th>Title</th>
+        <th>Amount</th>
+        <th>Client</th>
+        <th>VAT</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <?php foreach ($invoices as $index => $invoice): ?>
+      <tr>
+        <td><?=$index+1?></td>
+        <td><?=$invoice->invoice_no?></td>
+        <td><?=$invoice->date?></td>
+        <td><?=$invoice->title?></td>
+        <td><?=Format::currency($invoice->amount, 0, 2)?></td>
+        <td><?=$invoice->client_id?></td>
+        <td><?=$invoice->vat_invoice?'Yes':''?></td>
+        <td><a class="pagelink" href="invoices/invoice/edit?id=<?=$invoice->id?>">Edit Invoice</a></td>
+      </tr>
+      <?php endforeach; ?>
+      <?php if (empty($invoices)):?>
+      
+      <tr><td colspan="7">- None -</td></tr>
+      <?php endif; ?>
+      
+    </tbody>
+  </table>
+
+  <div class="row text-right pager"><?=$pager->pagination?></div>
+  
+  <!-- ADD CLIENT MODAL -->
+  <div id="add-invoice" class="modal hidden">
+    <form method="POST" class="pjax">
+      <div class="modal-inner">
+        <header>
+          <a class="modal-close" href="#" onclick="F1.modal.dismiss(this, event)">Close X</a>
+        </header>
+        <br>
+        <div class="modal-content">
+          <fieldset>
+            <legend>New Invoice</legend>
+            <div class="form-field">
+              <label>Invoice No.</label>
+              <input name="invoice[invoice_no]" value="" type="text">
+            </div>
+            <div class="form-field">
+              <label>Client</label>
+              <input name="invoice[client_id]" value="" type="text">
+            </div>            
+            <div class="form-field field-md">
+              <label>Title</label>
+              <input name="invoice[title]" value="" type="text">
+            </div>
+          </fieldset>          
+        </div>
+        <br>
+        <footer>
+          <div class="buttons-bar">
+            <button type="submit" name="add-invoice">Add new invoice</button>
+          </div>
+        </footer>
+      </form>
+    </div>
+  </div>
+  
+</div>

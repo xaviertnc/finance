@@ -1,0 +1,43 @@
+<div class="entity">
+
+  <div class="container">
+    <form class="pjax" method="POST">
+      <fieldset class="clearfix">
+        <div class="column">  
+          <div class="form-field">
+            <label>Account No.</label>
+            <input name="entity[acc_no]" value="<?=$entity->acc_no?>" type="text">
+          </div>
+          <div class="form-field field-md">
+            <label>Name</label>
+            <input name="entity[name]" value="<?=$entity->name?>" type="text">
+          </div>
+          <div class="form-field field-md">
+            <label>Description</label>
+            <textarea name="entity[description]" rows="3"><?=$entity->description?></textarea>
+          </div>
+          <div class="form-field field-md">
+            <label>Regex</label>
+            <textarea name="entity[regex]" rows="3"><?=$entity->regex?></textarea>
+          </div>            
+          <div class="form-field">
+            <label>Entity Group</label>
+            <?=$groupsDropdown?>
+          </div>
+          <div class="form-field">
+            <label>Entity Ledger Account</label>
+            <?=$chartOfAccountsDropdown?>
+          </div>
+          <div class="form-field">
+            <label>Credit Ledger Account?</label>
+            <input name="entity[debitCredit]" value="1" type="checkbox"<?=$entity->debitCredit?' checked':''?>>
+          </div>
+        </div>
+        <div class="row">
+          <button type="submit" name="update-entity">Update entity</button>
+        </div>
+      </fieldset>
+    </form>
+  </div>
+
+</div>

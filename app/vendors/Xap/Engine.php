@@ -1,4 +1,5 @@
-<?php
+<?php namespace Xap;
+
 /**
  * Xap - MySQL Rapid Development Engine for PHP 5.5+
  *
@@ -13,7 +14,10 @@
  *   - Added backticks fieldnames + removed spaces from query generated SQL strings.
  *
  */
-namespace Xap;
+ 
+include 'Decorate.php';
+include 'Pagination.php';
+include 'Cache.php';
 
 /**
  * Xap DB class

@@ -5,20 +5,11 @@
 
 
   // ----------------------
-  // ------ REQUEST -------
-  // ----------------------
-
-  $entity_id = array_get($_GET, 'id');
-
-
-
-  // ----------------------
   // -------- PAGE --------
   // ----------------------
 
   $page = new stdClass();
-  $page->breadcrumbs = ['Other Entities' => 'other-entities'];
-  $page->title = 'Edit Transaction Entity';
+  $page->title = 'Transaction Entities';
   $page->dir = $app->controllerPath;
   $page->id = 'page_' . $app->currentPage;
   $page->state = $app->session->get($page->id, []);
@@ -41,10 +32,9 @@
   DB::connect($app->dbConnection);
 
   include $page->modelFilePath;
-  $model = new EntityModel();
-  $entity = $model->getEntity($entity_id);
+  $model = new EntitiesModel();
 
-
+  
 
   // ----------------------
   // -------- POST --------
@@ -59,31 +49,11 @@
       $request->action = array_get($_POST, '__ACTION__');
       $request->params = array_get($_POST, '__PARAMS__');
 
-      $alerts[] = ['info', 'Hey, you posted some data with action: "' .  $request->action . '"', 0];
+      $alerts[] = ['info', 'Hey, you posted some data.', 3000];
 
-      if ($request->action == 'update-entity')
-      {
-        if ($model->updateEntity($entity_id, array_get($_POST, 'entity', [])))
-        {
-          $alerts[] = ['success', 'Update succesful.', 0];
-        }
-        else
-        {
-          $alerts[] = ['danger', 'Oops, something went wrong!', 0];
-        }
-        break;
-      }
-
-      if ($request->action == 'add-template')
-      {
-        if ($model->addInvoiceTemplate($entity_id, array_get($_POST, 'template', [])))
-        {
-          $alerts[] = ['success', 'Invoice Template added.', 0];
-        }
-        else
-        {
-          $alerts[] = ['danger', 'Oops, something went wrong!', 0];
-        }
+      if ($request->action == 'add-entity') {
+        $model->insertEntity(array_get($_POST, 'entity'));
+        $alerts[] = ['success', 'Congrats on a nice new entity!', 0];
         break;
       }
 
@@ -108,16 +78,26 @@
   // ----------------------
   else {
 
+    // Get Entities List
+    $entities = $model->listEntities();
+    
+    // Get next supplier account number
+    if ($entities) {
+      $lastEntity = end($entities);
+      $nextAccNo = 'E' . str_pad(substr($lastEntity->acc_no, 1) + 1, 5, '0', STR_PAD_LEFT);
+    } else { 
+      $nextAccNo = 'C00001';
+    }
+    
     // Get Entity Groups Dropdown List
     $groupsDropdown = new DropdownSelect(
-      'entity[group_id]', $model->listEntityGroups(), $entity->group_id, true, true, '- Select Group -');
+      'entity[group_id]', $model->listEntityGroups(), null, true, true, '- Select Group -');
 
     // Get Chart Of Accounts Dropdown List
     $chartOfAccountsDropdown = new DropdownSelect(
-      'entity[ledger_acc_id]', $model->listChartOfAccounts(), $entity->ledger_acc_id, 
-      true, true, '- Select Ledger Account -');
+      'entity[ledger_acc_id]', $model->listChartOfAccounts(), null, true, true, '- Select Ledger Account -');
 
-    // Render view!
+    // Render View!
     include $app->partialsPath . '/head.html';
     include $view->partialFile($app->page->dir, $app->page->viewFilePath, 'html', 3, null, '        ');
     include $app->partialsPath . '/foot.html';

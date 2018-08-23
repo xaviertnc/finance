@@ -9,7 +9,7 @@
   // ----------------------
   
   $page = new stdClass();
-  $page->title = 'Clients';
+  $page->title = 'Invoices';
   $page->dir = $app->controllerPath;
   $page->id = 'page_' . $app->currentPage;  
   $page->state = $app->session->get($page->id, []);
@@ -32,7 +32,7 @@
   DB::connect($app->dbConnection);
   
   include $page->modelFilePath;
-  $model = new ClientsModel();
+  $model = new InvoicesModel();
 
   
   
@@ -52,9 +52,9 @@
 
       $alerts[] = ['info', 'Hey, you posted some data.', 3000];
 
-      if ($request->action == 'add-client') {
-        $model->insertClient(array_get($_POST, 'client'));
-        $alerts[] = ['success', 'Congrats on a nice new client!', 5000];
+      if ($request->action == 'add-invoice') {
+        $model->insertInvoice(array_get($_POST, 'invoice'));
+        $alerts[] = ['success', 'Congrats on a nice new invoice!', 5000];
         break;
       }
 
@@ -81,21 +81,23 @@
   else {
 
     // Get Model
-    $clients = $model->listClients();
+    $pager = $pagination = new Xap\Pagination(
+      $model->listInvoices(
+        array_get($_GET, 'from'),
+        array_get($_GET, 'to'),
+        array_get($_GET, 'invno'),
+        array_get($_GET, 'title'),
+        array_get($_GET, 'page'),
+        array_get($_GET, 'rpp')
+      )
+    );
     
-    // Get next client account number
-    if ($clients) {
-      $lastClient = end($clients);
-      $nextAccNo = 'D' . str_pad(substr($lastClient->acc_no, 1) + 1, 5, '0', STR_PAD_LEFT);
-    } else {
-      $nextAccNo = 'D00001';
-    }
+    $invoices = $pager->rows;
     
-    // Get Chart Of Accounts Dropdown List
-    $chartOfAccountsDropdown = new DropdownSelect(
-      'client[ledger_acc_id]', $model->listChartOfAccounts(), null, true, true, '- Select Ledger Account -');    
-    
-    // Get View
+    // echo '<pre>', print_r($pager, true), '</pre>';
+    // die();
+
+    // Render view!
     include $app->partialsPath . '/head.html';
     include $view->partialFile($app->page->dir, $app->page->viewFilePath, 'html', 3, null, '        ');
     include $app->partialsPath . '/foot.html';
