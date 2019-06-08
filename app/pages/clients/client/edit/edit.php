@@ -128,7 +128,7 @@
       $templateTotals = new stdClass();
       $templateTotals->subtotal = 0;
       foreach ($template->items as $item) {
-        $templateTotals->subtotal += ($item->cost_price * $item->quantity);
+        $templateTotals->subtotal += ($item->unit_price * $item->quantity);
       }
       $templateTotals->vat = $template->vat_invoice ? $templateTotals->subtotal * ($app->VAT/100) : 0;
       $templateTotals->grandTotal = round($templateTotals->subtotal + $templateTotals->vat, 2);

@@ -1,7 +1,28 @@
 <div class="client">
 
-  <div class="container">
-    <form class="pjax" method="POST">
+  <div class="tab-bar">
+    <ul class="tabs">
+      <li class="active" data-tab="contact-info">
+        <a>Contact Info</a>
+      </li>
+      <li data-tab="crm">
+        <a>CRM</a>
+      </li>
+      <li data-tab="config">
+        <a>Config</a>
+      </li>
+      <li data-tab="invoice-templates">
+        <a>Invoice Templates</a>
+      </li>
+      <li data-tab="invoices">
+        <a>Invoices</a>
+      </li>
+    </ul>
+    <hr>
+  </div>
+
+  <form class="pjax" method="POST">
+    <div id="contact-info" class="container tab-content active">
       <fieldset class="clearfix">
         <div class="column">
           <div class="form-field">
@@ -17,8 +38,27 @@
             <input name="client[contact]" value="<?=$client->contact?>" type="text">
           </div>
           <div class="form-field field-md">
-            <label>Description</label>
-            <textarea name="client[description]" rows="2"><?=$client->description?></textarea>
+            <label>Postal Addr</label>
+            <textarea name="client[postal_addr]" rows="3"><?=$client->postal_addr?></textarea>
+          </div>
+          <div class="form-field field-md">
+            <label>Street Addr</label>
+            <textarea name="client[street_addr]" rows="3"><?=$client->street_addr?></textarea>
+          </div>
+          <!-- <div class="form-field field-md"> -->
+            <!-- <label>Delivery Addr</label> -->
+            <!-- <textarea name="client[delivery_addr]" rows="3"><?=$client->delivery_addr?></textarea> -->
+          <!-- </div> -->
+        </div>
+        <div class="column">
+          <div class="form-field field-md">
+            <label>Email Addr</label>
+            <textarea name="client[email]" rows="2"><?=
+              str_replace(';', ';'.PHP_EOL, str_replace(' ', '', $client->email))?></textarea>
+          </div>
+          <div class="form-field field-md">
+            <label>Website</label>
+            <input name="client[website]" value="<?=$client->website?>" type="text">
           </div>
           <div class="form-field">
             <label>Cell</label>
@@ -32,18 +72,35 @@
             <label>Fax</label>
             <input name="client[fax]" value="<?=$client->fax?>" type="text">
           </div>
+        </div>
+        <div class="row">
+          <button type="submit" name="update-client">Update client</button>
+        </div>
+      </fieldset>
+    </div>
+
+    <div id="crm" class="container tab-content">
+      <fieldset class="clearfix">
+        <div class="row form-field">
+          <label>Client Notes</label>
+          <textarea style="width:100%" name="client[crm_notes]" rows="15"><?=$client->crm_notes?></textarea>
+        </div>
+        <div class="row">
+          <button type="submit" name="update-client">Update client</button>
+        </div>
+      </fieldset>
+    </div>
+
+    <div id="config" class="container tab-content">
+      <fieldset class="clearfix">
+        <div class="column">
           <div class="form-field field-md">
-            <label>Email</label>
-            <textarea name="client[email]" rows="2"><?=
-              str_replace(';', ';'.PHP_EOL, str_replace(' ', '', $client->email))?></textarea>
+            <label>Invoice To</label>
+            <textarea name="client[description]" rows="5"><?=$client->description?></textarea>
           </div>
           <div class="form-field field-md">
-            <label>Website</label>
-            <input name="client[website]" value="<?=$client->website?>" type="text">
-          </div>
-          <div class="form-field field-md">
-            <label>ID regex</label>
-            <textarea name="client[regex]" rows="2"><?=$client->regex?></textarea>
+            <label>Invoice Custom Note</label>
+            <textarea name="client[invoice_note]" rows="5"><?=$client->invoice_note?></textarea>
           </div>
         </div>
         <div class="column">
@@ -58,36 +115,20 @@
           <div class="form-field">
             <label>Ledger Acc.</label>
             <?=$chartOfAccountsDropdown?>
-          </div>          
-          <div class="form-field field-md">
-            <label>Street Addr</label>
-            <textarea name="client[street_addr]" rows="3"><?=$client->street_addr?></textarea>
           </div>
           <div class="form-field field-md">
-            <label>Postal Addr</label>
-            <textarea name="client[postal_addr]" rows="3"><?=$client->postal_addr?></textarea>
+            <label>ID regex</label>
+            <textarea name="client[regex]" rows="2"><?=$client->regex?></textarea>
           </div>
-          <div class="form-field field-md">
-            <label>Delivery Addr</label>
-            <textarea name="client[delivery_addr]" rows="3"><?=$client->delivery_addr?></textarea>
-          </div>
-          <div class="form-field field-md">
-            <label>Invoice Note</label>
-            <textarea name="client[invoice_note]" rows="3"><?=$client->invoice_note?></textarea>
-          </div>
-        </div>
-        <div class="row form-field">
-          <label>CRM Notes</label>
-          <textarea style="width:100%" name="client[crm_notes]" rows="3"><?=$client->crm_notes?></textarea>
         </div>
         <div class="row">
           <button type="submit" name="update-client">Update client</button>
         </div>
       </fieldset>
-    </form>
-  </div>
+    </div>
+  </form>
 
-  <div class="container" style="margin-top:1em">
+  <div id="invoice-templates" class="container tab-content">
     <div class="action-bar text-right">
       <button type="button" onclick="F1.modal.show('#add-template', event, 'reset')">+ Add recurring invoice</button>
     </div>
@@ -120,6 +161,7 @@
             <th class="text-center">Qty</th>
             <th class="text-center">% Disc.</th>
             <th class="text-right">Line Total</th>
+            <th>&nbsp;</th>
           </tr>
         </thead>
         <tbody>
@@ -128,31 +170,35 @@
           <tr>
             <td><?=$item->code?></td>
             <td><?=$item->name?></td>
-            <td class="text-center"><?=Format::currency($item->cost_price, 0, 2)?></td>
+            <td class="text-center"><?=Format::currency($item->unit_price, 0, 2)?></td>
             <td class="text-center"><?=$item->quantity?></td>
             <td class="text-center"><?=$item->percent_discount?></td>
-            <td class="text-right"><?=Format::currency($item->cost_price * $item->quantity, 0, 2)?></td>
+            <td class="text-right"><?=Format::currency($item->unit_price * $item->quantity, 0, 2)?></td>
+            <td><?=$item->note?></td>
           </tr>
           <?php endforeach; ?>
           <?php if (empty($template->items)):?>
 
-          <tr><td colspan="6">- None -</td></tr>
+          <tr><td colspan="7">- None -</td></tr>
           <?php else: ?>
 
           <tr class="subtotal">
             <td colspan="3">&nbsp;</td>
             <td class="text-right" colspan="2">Subtotal</td>
             <td class="text-right"><?=Format::currency($template->totals->subtotal, 0, 2)?></td>
+            <td></td>
           </tr>
           <tr>
             <td colspan="3">&nbsp;</td>
             <td class="text-right" colspan="2"><em>VAT @ <?=$app->VAT?>%</em></td>
             <td class="text-right"><em><?=Format::currency($template->totals->vat, 'n/a', 2)?></em></td>
+            <td></td>
           </tr>
           <tr>
             <td colspan="3">&nbsp;</td>
             <td class="text-right" colspan="2"><b>Grand Total<b></td>
             <td class="text-right"><b><?=Format::currency($template->totals->grandTotal, 0, 2)?></b></td>
+            <td></td>
           </tr>
           <?php endif; ?>
         </tbody>
@@ -163,6 +209,12 @@
 
     <div class="card">- None -</div>
     <?php endif; ?>
+  </div>
+
+  <div id="invoices" class="container tab-content">
+    <fieldset class="clearfix">
+      <p>Nothing to see here yet...</p>
+    </fieldset>
   </div>
 
   <!-- NEW INVOICE TEMPLATE MODAL -->
@@ -176,11 +228,11 @@
         <div class="modal-content">
           <fieldset>
             <legend>Add New Invoice Template</legend>
-            <div class="form-field">
+            <div class="form-field field-md">
               <label>Invoice Title</label>
               <input name="template[name]" value="" type="text">
             </div>
-            <div class="form-field">
+            <div class="form-field field-md">
               <label>Description</label>
               <textarea name="template[description]" rows="2"></textarea>
             </div>

@@ -5,6 +5,7 @@ fieldset { background-color: white; padding: 1em; }
 
 #page-header .titlebar { background-color: maroon; color: white; padding: 1em; }
 #page-header .titlebar a:visited { color: moccasin; }
+#page-header .titlebar a:focus { color: moccasin; }
 
 #page-header .nav { padding: 0 0 0.5em; margin: 0; }
 #page-header .nav li { display: inline-block; margin: 0.1em 0; padding: 0.3em; border: 1px solid gainsboro; }
@@ -33,7 +34,7 @@ fieldset { background-color: white; padding: 1em; }
 
 #back-to-top  a { display: inline-block; padding: 1em 0.5em; }
 
-#page-content { padding: 1em 0; position: relative; }
+#page-content { padding: 0.7em 0; position: relative; }
 
 #page-footer { background-color: gainsboro; font-size: 0.9em; padding: 1em; }
 
@@ -145,6 +146,52 @@ label {
   margin: 0.5em 3px 1em;
   padding: 1em;
   /* box-shadow: 1px 1px 3px 0 gray; */
+}
+
+.tab-bar hr {
+  border-top: 1px solid grey;
+  border-bottom: 0;
+  clear: both;
+}
+
+.tabs {
+  display: block;
+  list-style: none;
+  margin: 0 5px;
+  padding: 0;
+}
+
+.tabs li {
+  float: left;
+  border: 1px solid transparent;
+  border-bottom-width: 0;
+  margin: 0 0.5em 0 0;
+}
+
+.tabs li:hover {
+  cursor: pointer;
+}
+
+.tabs a {
+  display: block;
+  padding: 0.3em 0.5em;
+  font-weight: bold;
+}
+
+.tabs .active {
+  background-color: whitesmoke;
+  border-color: grey;
+  position: relative;
+  top: 1px;
+}
+
+.tab-content {
+  clear: both;
+  display: none;
+}
+
+.tab-content.active {
+  display: block;
 }
 
 .nowrap { white-space: nowrap; }

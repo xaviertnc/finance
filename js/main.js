@@ -4,6 +4,32 @@
 
 F1.DEBUG = false;
 
+// Returns a function, that, as long as it continues to be invoked, will not
+// be triggered. The function will be called after it stops being called for
+// N milliseconds. If `immediate` is passed, trigger the function on the
+// leading edge, instead of the trailing.
+F1.debounce = function(func, wait, immediate) {
+  var timeout;
+  console.log('Debounce Triggered');
+  return function() {
+    var context = this, args = arguments;
+    var later = function() {
+      timeout = null;
+      if (!immediate) {
+        console.log('Debounce: Executing the payload AFTER TIMER timeout.');
+        func.apply(context, args);
+      }
+    };
+    var callNow = immediate && !timeout;
+    clearTimeout(timeout);
+    timeout = setTimeout(later, wait);
+    if (callNow) {
+      console.log('Debounce: Executing the payload AT TIMER START.');
+      func.apply(context, args);
+    }
+  };
+};
+
 
 F1.confirm = function(elm, event, message)
 {
@@ -52,6 +78,8 @@ $(document).ready(function start() {
 
   F1.modal = new F1.Modal();
 
+  F1.tabs = new F1.Tabs();
+
   F1.pjax = new F1.Pjax({
     siteName: 'My Finance',
     busyImageUrl: 'loading.ico',
@@ -63,6 +91,7 @@ $(document).ready(function start() {
       F1.afterPageLoadScripts = [];
       F1.pjax.bindViewports();
       F1.alerts.bind();
+      F1.tabs.bind();
     },
     pageHasUnsavedChanges: function () {
       return false;
@@ -73,5 +102,6 @@ $(document).ready(function start() {
   F1.afterPageLoadScripts = [];
   F1.pjax.bindViewports();
   F1.alerts.bind();
+  F1.tabs.bind();
 
 });
