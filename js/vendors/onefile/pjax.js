@@ -475,15 +475,22 @@ F1.Pjax.prototype.getResponseErrorMessage = function (jqXHR)
  * JSON response string examples:
  *   "{ 'url':'/some/page' }"
  *   "{ 'redirect':'/some/page' }"
+ *   "{ 'redirect':'http://some-external-page.com', 'external':1 }"
  *
  * @param {Object} jqXHR jQuery Ajax Response Object
  */
 F1.Pjax.prototype.handleRedirect = function (jqXHR) {
+  var extLink;
   var resp = jqXHR.responseText;
   var redirectUrl = jqXHR.getResponseHeader('X-REDIRECT-TO');
   if ( ! redirectUrl) {
     resp = (typeof resp === 'string') ? JSON.parse(resp) : resp;
     redirectUrl = resp.redirect || resp.url || '';
+    extLink = !!resp.external;
+    if (extLink) {
+      // Redirect to an external page!
+      return window.location.href = redirectUrl;
+    }
   }
   // console.log('handleRedirect(), redirectUrl:', redirectUrl);
   if ( ! this.isCurrentLocation(redirectUrl)) {
