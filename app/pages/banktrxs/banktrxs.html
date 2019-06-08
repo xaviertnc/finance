@@ -5,7 +5,7 @@
     <form class="pjax pull-right" method="POST">
       <button type="submit" name="run-auto-detect">Run Auto Detect</button>
       <button type="submit" name="run-auto-assign">Run Auto Assign</button>
-    </form>  
+    </form>
     <form class="pull-left" method="GET">
       <input name="year" value="<?=$taxYear?>" type="hidden">
       <?=$accNamesDropdown?>
@@ -28,7 +28,7 @@
     </thead>
     <tbody>
     <?php foreach ($transactions as $trx): ?>
-    
+
       <tr>
         <td><?=$trx->date?></td>
         <td class="desc" title="<?=$trx->description?>"><?=$trx->description?></td>
@@ -39,7 +39,7 @@
         <td><?php $status = array_get($trx_statuses, $trx->status_id); print $status?:'*'; ?></td>
       </tr>
       <?php endforeach;?>
-   
+
     </tbody>
   </table>
 </div>

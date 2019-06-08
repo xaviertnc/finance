@@ -7,7 +7,7 @@
         <input name="invno" value="<?=array_get($_GET, 'invno')?>" style="width:80px" type="text">
         &nbsp;&nbsp;
         <b>Title:</b>
-        <input name="title" value="<?=array_get($_GET, 'title')?>" type="text">        
+        <input name="title" value="<?=array_get($_GET, 'title')?>" type="text">
       </span>
       <button type="submit">Search</button>
     </form>
@@ -41,15 +41,15 @@
       </tr>
       <?php endforeach; ?>
       <?php if (empty($invoices)):?>
-      
+
       <tr><td colspan="7">- None -</td></tr>
       <?php endif; ?>
-      
+
     </tbody>
   </table>
 
   <div class="row text-right pager"><?=$pager->pagination?></div>
-  
+
   <!-- ADD CLIENT MODAL -->
   <div id="add-invoice" class="modal hidden">
     <form method="POST" class="pjax">
@@ -68,12 +68,12 @@
             <div class="form-field">
               <label>Client</label>
               <input name="invoice[client_id]" value="" type="text">
-            </div>            
+            </div>
             <div class="form-field field-md">
               <label>Title</label>
               <input name="invoice[title]" value="" type="text">
             </div>
-          </fieldset>          
+          </fieldset>
         </div>
         <br>
         <footer>
@@ -84,5 +84,5 @@
       </form>
     </div>
   </div>
-  
+
 </div>

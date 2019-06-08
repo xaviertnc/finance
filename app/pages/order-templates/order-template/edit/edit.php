@@ -1,27 +1,27 @@
 <?php
-  
-  
+
+
   // ----------------------
   // ------ REQUEST -------
-  // ----------------------  
+  // ----------------------
 
   $supplier_id = array_get($_GET, 'supplier');
   $package_id = array_get($_GET, 'id');
-  
 
-  
+
+
   // ----------------------
   // -------- PAGE --------
   // ----------------------
-      
+
   $page = new stdClass();
   $page->breadcrumbs = [
     'Suppliers' => 'suppliers',
     'Supplier'  => 'suppliers/supplier/edit?id=' . $supplier_id
-  ];  
+  ];
   $page->title = 'Edit Package';
   $page->dir = $app->controllerPath;
-  $page->id = 'page_' . $app->currentPage;  
+  $page->id = 'page_' . $app->currentPage;
   $page->state = $app->session->get($page->id, []);
   $page->errors = $app->session->get('errors', []);
   $page->alerts = $app->session->get('alerts', []);
@@ -34,20 +34,20 @@
   $app->page = $page;
 
 
-  
+
 
   // ----------------------
   // -------- MODEL --------
   // ----------------------
 
   DB::connect($app->dbConnection);
-    
-  include $page->modelFilePath;  
+
+  include $page->modelFilePath;
   $model = new SupplierPackageModel();
   $package = $model->getPackage($package_id);
 
 
-  
+
   // ----------------------
   // -------- POST --------
   // ----------------------
@@ -75,7 +75,7 @@
         }
         break;
       }
-      
+
       if ($request->action == 'add-package-item')
       {
         if ($model->addPackageItem($package_id, array_get($_POST, 'package-item', [])))
@@ -87,7 +87,7 @@
           $alerts[] = ['danger', 'Oops, something went wrong!', 0];
         }
         break;
-      }        
+      }
 
       if ($request->action == 'delete-item') {
         $alerts[] = ['danger', 'Aaww! You just deleted little Timmy #' . $request->params .' :-(', 0];
@@ -99,20 +99,20 @@
     // FLASH Messages
     $app->session->put('errors', $errors);
     $app->session->put('alerts', $alerts);
-    
+
     $response->redirectTo = $request->back ?: $request->uri;
   }
 
 
-  
+
   // ----------------------
   // -------- GET ---------
   // ----------------------
   else {
-    
+
     // Get Items List
     $packageItems = $model->listPackageItems($package_id);
-    
+
     // Get View
     include $app->partialsPath . '/head.html';
     include $view->partialFile($app->page->dir, $app->page->viewFilePath, 'html', 3, null, '        ');

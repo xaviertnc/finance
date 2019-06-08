@@ -21,15 +21,16 @@
             <input name="invoice-item[unit_price]" value="<?=$item->unit_price?>" type="text">
             <small class="add-on">(Recommended: <?=Format::currency($product->default_price, 0, 2)?>)</small>
           </span>
-        </div>            
+        </div>
         <div class="form-field">
           <label>Item Note</label>
           <textarea name="invoice-item[note]" rows="2"><?=$item->note?></textarea>
         </div>
         <div class="row">
           <button type="submit" name="update-invoice-item">Update invoice item</button>
-        </div>        
+        </div>
       </fieldset>
     </form>
   </div>
+
 </div>

@@ -12,13 +12,13 @@
     if ($trx->entity_group_id == 2) {
       $supplier = array_get($suppliers, $trx->entity_id);
       return $supplier ? $supplier->name : '-';
-    }    
+    }
     $entity = array_get($entities, $trx->entity_id);
     return $entity ?: '-';
   }
-  
 
-  
+
+
   // ----------------------
   // ------ REQUEST -------
   // ----------------------
@@ -70,8 +70,8 @@
   $toDate = date('Y-m-01', strtotime($fromDate . ' +1 MONTH'));
   $transactions = $model->listTransactions($accShortName, $fromDate, $toDate);
 
-  
-  
+
+
   // ----------------------
   // -------- POST --------
   // ----------------------
@@ -100,7 +100,7 @@
 
         // Get bank-transfer entities
         $transferEntities = $model->listTransferEntities();
-        
+
         // Detect Bank Transfers FIRST
         foreach ($transactions as $trx)
         {
@@ -143,7 +143,7 @@
             ]);
           }
         }
-        
+
         // Clients by Dxxx
         foreach ($transactions as $trx) {
           if ($trx->ledger_acc_id) { continue; }
@@ -155,7 +155,7 @@
             $entity = $model->getClientByAccNo($client_acc_no);
             // $app->log->bank_detect('entity = ' . print_r($entity, true));
             if ( ! $entity) { continue; }
-            $ledger_acc = array_get($chart_of_accounts, $entity->ledger_acc_id?:143);            
+            $ledger_acc = array_get($chart_of_accounts, $entity->ledger_acc_id?:143);
             $model->updateBankTrx($accShortName, $trx->id, [
               'entity_group_id' => 1, // Clients
               'entity_id'       => $entity->id,
@@ -166,7 +166,7 @@
             ]);
           }
         }
-        
+
         // Clients By RegEx
         $clients = $model->listClients();
         foreach ($clients as $entity) {
@@ -184,10 +184,10 @@
                 'ledger_acc_id'   => $ledger_acc->id,
                 'status_id'       => 4 // Regex Assign (Client)
               ]);
-            } 
+            }
           }
         }
-        
+
         // Suppliers By RegEx
         $suppliers = $model->listSuppliers();
         foreach ($suppliers as $entity) {
@@ -196,7 +196,7 @@
           foreach ($transactions as $trx) {
             if ($trx->ledger_acc_id) { continue; }
             if ($entity->ledger_acc_id and preg_match($regex, $trx->description)) {
-              $ledger_acc = array_get($chart_of_accounts, $entity->ledger_acc_id?:187); // 187 = Cost of Sales - General 
+              $ledger_acc = array_get($chart_of_accounts, $entity->ledger_acc_id?:187); // 187 = Cost of Sales - General
               $model->updateBankTrx($accShortName, $trx->id, [
                 'entity_group_id' => 2, // Suppliers
                 'entity_id'       => $entity->id,
@@ -205,10 +205,10 @@
                 'ledger_acc_id'   => $ledger_acc->id,
                 'status_id'       => 5 // Regex Assign (Supplier)
               ]);
-            } 
+            }
           }
         }
-        
+
         // Other Entities By RegEx
         $otherEntities = $model->listOtherEntities();
         foreach ($otherEntities as $entity) {
@@ -226,18 +226,18 @@
                 'ledger_acc_id'   => $ledger_acc->id,
                 'status_id'       => 6 // Regex Assign (Other)
               ]);
-            } 
+            }
           }
         }
-        
+
         break;
       }
-      
+
       if ($request->action == 'run-auto-assign') {
         $alerts[] = ['danger', 'SHIT Manne, kom ons probeer hom reg kry...', 0];
         break;
       }
-      
+
       if ($request->action == 'delete-item') {
         $alerts[] = ['danger', 'Aaww! You just deleted little Timmy #' . $request->params .' :-(', 0];
         break;
@@ -259,13 +259,13 @@
   // ----------------------
 
   else {
-    
+
     $clients = $model->listClients();
-    
+
     $suppliers = $model->listSuppliers();
-    
+
     $entities = $model->listEntities();
-    
+
     $trx_statuses = $model->listStatuses();
     // $acc_subcategories = $model->listAccSubCategories();
     $chart_of_accounts = $model->listChartOfAccounts();
@@ -275,7 +275,7 @@
 
     // Get Months Dropdown
     include $app->modelsPath . '/collections/TaxMonths.php';
-    $taxMonths = new TaxMonths($taxYear);    
+    $taxMonths = new TaxMonths($taxYear);
     $taxMonthsDropDown = new DropdownSelect('month', $taxMonths->getAll(), $taxMonth);
 
     // Render view!

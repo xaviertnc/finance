@@ -34,7 +34,7 @@
   include $page->modelFilePath;
   $model = new EntitiesModel();
 
-  
+
 
   // ----------------------
   // -------- POST --------
@@ -80,15 +80,15 @@
 
     // Get Entities List
     $entities = $model->listEntities();
-    
+
     // Get next supplier account number
     if ($entities) {
       $lastEntity = end($entities);
       $nextAccNo = 'E' . str_pad(substr($lastEntity->acc_no, 1) + 1, 5, '0', STR_PAD_LEFT);
-    } else { 
+    } else {
       $nextAccNo = 'C00001';
     }
-    
+
     // Get Entity Groups Dropdown List
     $groupsDropdown = new DropdownSelect(
       'entity[group_id]', $model->listEntityGroups(), null, true, true, '- Select Group -');

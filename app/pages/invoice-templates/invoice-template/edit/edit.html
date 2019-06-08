@@ -68,7 +68,7 @@
             <td><?=$item->percent_discount?>%</td>
             <td><?=Format::currency($item->unit_price * $item->quantity, 0, 2)?></td>
             <td>
-              <a class="pagelink" 
+              <a class="pagelink"
                 href="invoice-template-items/invoice-template-item/edit?id=<?=$item->id?>&amp;client=<?=$client_id?>&amp;template=<?=$template->id?>">
                   Edit Item
               </a>
@@ -76,10 +76,10 @@
           </tr>
           <?php endforeach; ?>
           <?php if (empty($templateItems)):?>
-          
+
           <tr><td colspan="7">- None -</td></tr>
           <?php else: ?>
-          
+
           <tr><td colspan="7">&nbsp;</td></tr>
           <tr>
             <td colspan="3">&nbsp;</td>
@@ -95,7 +95,7 @@
             <td colspan="3">&nbsp;</td>
             <td colspan="2">Grand Total</td>
             <td><b><?=Format::currency($invoiceTotals->grandTotal, 0, 2)?></b></td>
-          </tr>          
+          </tr>
           <?php endif; ?>
         </tbody>
       </table>
@@ -128,7 +128,7 @@
             <div class="form-field">
               <label>Selling Price</label>
               <input name="template-item[unit_price]" value="" type="text">
-            </div>            
+            </div>
             <div class="form-field">
               <label>Item Note</label>
               <textarea name="template-item[note]" rows="2"></textarea>

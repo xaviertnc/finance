@@ -14,7 +14,7 @@ class SelectListItem {
   protected $label = 'Option';
   protected $selected = false;
 
-  
+
   public function __construct($index, $value, $label = null, $selectedValue = null)
   {
     $this->index = $index;
@@ -23,7 +23,7 @@ class SelectListItem {
     $this->selected = $value == $selectedValue;
   }
 
-  
+
   public function __toString()
   {
     return '<option value="' . $this->value . ($this->selected ? '" selected>' : '">') . ($this->label ?: $this->value) . '</option>' . PHP_EOL;

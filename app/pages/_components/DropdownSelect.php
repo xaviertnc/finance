@@ -35,7 +35,7 @@ class DropdownSelect {
 
   }
 
-  
+
   public function __toString()
   {
     $html = '<select name="' . $this->name . '">' . PHP_EOL;

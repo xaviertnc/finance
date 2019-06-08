@@ -17,16 +17,17 @@
   // ----------------------
   // -------- PAGE --------
   // ----------------------
-  
+
   $page = new stdClass();
   $page->breadcrumbs = [
     'Clients' => 'clients',
     'Client'  => 'clients/client/edit?id=' . $client_id,
-    'Invoice' => 'invoice-templates/invoice-template/edit?id=' . $template_id . '&amp;client=' . $client_id
-  ];  
+    'Invoice Template' => 'invoice-templates/invoice-template/edit?id=' .
+      $template_id . '&amp;client=' . $client_id
+  ];
   $page->title = 'Edit Invoice Template Item';
   $page->dir = $app->controllerPath;
-  $page->id = 'page_' . $app->currentPage;  
+  $page->id = 'page_' . $app->currentPage;
   $page->state = $app->session->get($page->id, []);
   $page->errors = $app->session->get('errors', []);
   $page->alerts = $app->session->get('alerts', []);
@@ -37,8 +38,8 @@
   $page->csrfToken = md5(uniqid(rand(), true)); //time();
 
   $app->page = $page;
-  
-  
+
+
 
   // ----------------------
   // -------- MODEL --------
@@ -46,12 +47,12 @@
 
   DB::connect($app->dbConnection);
 
-  include $page->modelFilePath;  
+  include $page->modelFilePath;
   $model = new InvoiceItemModel();
   $item = $model->getInvoiceItem($item_id);
 
 
-  
+
   // ----------------------
   // -------- POST --------
   // ----------------------
@@ -67,7 +68,7 @@
 
       $alerts[] = ['info', 'Hey, you posted some data with action: "' .  $request->action . '"', 0];
 
-     
+
       if ($request->action == 'update-invoice-item')
       {
         if ($model->updateInvoiceItem($item_id, array_get($_POST, 'invoice-item', [])))
@@ -79,7 +80,7 @@
           $alerts[] = ['danger', 'Oops, something went wrong!', 0];
         }
         break;
-      }        
+      }
 
       if ($request->action == 'delete-item') {
         $alerts[] = ['danger', 'Aaww! You just deleted little Timmy #' . $request->params .' :-(', 0];
@@ -91,20 +92,20 @@
     // FLASH Messages
     $app->session->put('errors', $errors);
     $app->session->put('alerts', $alerts);
-    
+
     $response->redirectTo = $request->back ?: $request->uri;
   }
 
 
-  
+
   // ----------------------
   // -------- GET ---------
   // ----------------------
   else {
-    
+
     // Get currently linked product
     $product = $model->getProduct($item->product_id);
-         
+
     // Get Products Dropdown List
     $productsDropdown = new DropdownSelect(
       'invoice-item[product_id]', $model->listProducts(), $item->product_id, true, true, '- Select Product -');

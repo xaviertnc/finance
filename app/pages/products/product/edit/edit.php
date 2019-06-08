@@ -111,15 +111,15 @@
     // Get Categories Dropdown List
     $categoriesDropdown = new DropdownSelect(
       'product[category_id]', $model->listCategories(), $product->category_id, true, true, '- Select Category -');
-      
+
     // Get SubCategories Dropdown List
     $subCategoriesDropdown = new DropdownSelect(
       'product[subcategory_id]', $model->listSubCategories(), $product->subcategory_id, true, true, '- Select Sub Category -');
-      
+
     // Get Suppliers Dropdown List
     $suppliersDropdown = new DropdownSelect(
       'product[supplier_id]', $model->listSuppliers(), $product->supplier_id, true, true, '- Select Supplier -');
-      
+
     // Get View
     include $app->partialsPath . '/head.html';
     include $view->partialFile($app->page->dir, $app->page->viewFilePath, 'html', 3, null, '        ');

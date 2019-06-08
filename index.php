@@ -25,8 +25,8 @@ register_shutdown_function(function(){
 
 $request = new stdClass();
 $request->uri = $_SERVER['REQUEST_URI'];
-$request->host = '//nm.localhost';
-$request->uriBase = '/finance/';
+$request->host = '//finance.localhost';
+$request->uriBase = '/';
 $request->urlBase = $request->host . $request->uriBase;
 $request->method = $_SERVER['REQUEST_METHOD'];
 $request->back = array_get($_SERVER, 'HTTP_REFERER');
@@ -51,7 +51,7 @@ $app->dbConnection =
 $app->VAT = 15;
 $app->id = 'MyFinance';
 $app->siteName = 'My Finance';
-$app->rootPath = 'C:/UniServerZ/vhosts/NM/finance';
+$app->rootPath = 'C:/Laragon/www/finance';
 $app->request = $request;
 $app->response = $response;
 $app->appPath = $app->rootPath . '/app';
@@ -83,11 +83,6 @@ require $app->servicesPath . '/View.php';
 require $app->controller;
 
 
-// echo '<pre>', print_r($app, true), '</pre>';
-// echo '<pre>', print_r($_SERVER, true), '</pre>';
-// echo '<pre>', print_r($_SESSION, true), '</pre>';
-
-
 if (isset($response->redirectTo))
 {
   // If you want a HARD REDIRECT after an AJAX POST, just
@@ -98,9 +93,17 @@ if (isset($response->redirectTo))
     http_response_code(202);
     header('Content-type: application/json');
     header('Cache-Control: no-cache, must-revalidate');
-		header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
-		header('X-REDIRECT-TO:' . $response->redirectTo);
-    echo json_encode(['redirect' => $response->redirectTo]);
+    header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
+    if (empty($response->redirectExternal))
+    {
+      header('X-REDIRECT-TO:' . $response->redirectTo);
+      $jsonData = ['redirect' => $response->redirectTo];
+    }
+    else
+    {
+      $jsonData = ['redirect' => $response->redirectTo, 'external' => 1];
+    }
+    echo json_encode($jsonData);
     exit;
   }
   // HARD REDIRECT

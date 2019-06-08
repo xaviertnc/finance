@@ -39,7 +39,7 @@ class View {
   }
 
 
-  public function compile($pagePath, $filePath, $fileExt, $dentCount, 
+  public function compile($pagePath, $filePath, $fileExt, $dentCount,
     $dent, $before, $after, $firstDent = null)
   {
     $timestamp = filemtime($filePath);
@@ -59,14 +59,14 @@ class View {
     return $cacheFilePath;
   }
 
-  
-  public function partialFile($pagePath, $filePath, $fileExt = 'html', 
+
+  public function partialFile($pagePath, $filePath, $fileExt = 'html',
     $dentCount = null, $dent = null, $firstDent = null)
   {
     if ( ! file_exists($filePath)) { return; }
     return $this->compile($pagePath, $filePath, $fileExt, $dentCount?:3, $dent, null, null, $firstDent);
   }
-  
+
 
   public function stylesFile($dentCount = 2, $dent = null)
   {
@@ -116,7 +116,7 @@ class View {
     }
     return $linkHtml ? implode(' / ', $linkHtml) . " / $pageTitle" : $pageTitle;
   }
-  
+
 }
 
 $view = new View($app);

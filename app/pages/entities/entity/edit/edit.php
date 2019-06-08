@@ -101,7 +101,7 @@
 
     // Get Chart Of Accounts Dropdown List
     $chartOfAccountsDropdown = new DropdownSelect(
-      'entity[ledger_acc_id]', $model->listChartOfAccounts(), $entity->ledger_acc_id, 
+      'entity[ledger_acc_id]', $model->listChartOfAccounts(), $entity->ledger_acc_id,
       true, true, '- Select Ledger Account -');
 
     // Render view!

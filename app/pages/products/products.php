@@ -2,17 +2,17 @@
 
   include $app->componentsPath . '/SelectListItem.php';
   include $app->componentsPath . '/DropdownSelect.php';
-  
 
-  
+
+
   // ----------------------
   // -------- PAGE --------
   // ----------------------
-  
+
   $page = new stdClass();
   $page->title = 'Products';
   $page->dir = $app->controllerPath;
-  $page->id = 'page_' . $app->currentPage;  
+  $page->id = 'page_' . $app->currentPage;
   $page->state = $app->session->get($page->id, []);
   $page->errors = $app->session->get('errors', []);
   $page->alerts = $app->session->get('alerts', []);
@@ -33,10 +33,10 @@
   DB::connect($app->dbConnection);
 
   include $page->modelFilePath;
-  $model = new ProductsModel();  
+  $model = new ProductsModel();
 
-  
-  
+
+
   // ----------------------
   // -------- POST --------
   // ----------------------
@@ -64,16 +64,16 @@
       }
 
     } while (0);
-    
+
     // FLASH Messages
     $app->session->put('errors', $errors);
     $app->session->put('alerts', $alerts);
-    
+
     $response->redirectTo = $request->back ?: $request->uri;
   }
 
 
-  
+
   // ----------------------
   // -------- GET ---------
   // ----------------------
@@ -82,18 +82,18 @@
     // Get Categories Dropdown List
     $categoriesDropdown = new DropdownSelect(
       'product[category_id]', $model->listCategories(), null, true, true, '- Select Category -');
-      
+
     // Get SubCategories Dropdown List
     $subCategoriesDropdown = new DropdownSelect(
       'product[subcategory_id]', $model->listSubCategories(), null, true, true, '- Select Sub Category -');
-      
+
     // Get Suppliers Dropdown List
     $suppliersDropdown = new DropdownSelect(
       'product[supplier_id]', $model->listSuppliers(), null, true, true, '- Select Supplier -');
-      
+
     // Get Products List
     $products = $model->listProducts();
-    
+
     // Get View
     include $app->partialsPath . '/head.html';
     include $view->partialFile($app->page->dir, $app->page->viewFilePath, 'html', 3, null, '        ');

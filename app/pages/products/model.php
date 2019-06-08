@@ -26,7 +26,7 @@ class ProductsModel
   {
     return DB::query('prod_subcategories')->getBy('id', 'name');
   }
-  
+
 
   public function listSuppliers()
   {

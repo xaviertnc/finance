@@ -7,11 +7,11 @@
   // ----------------------
   // -------- PAGE --------
   // ----------------------
-  
+
   $page = new stdClass();
   $page->title = 'Invoices';
   $page->dir = $app->controllerPath;
-  $page->id = 'page_' . $app->currentPage;  
+  $page->id = 'page_' . $app->currentPage;
   $page->state = $app->session->get($page->id, []);
   $page->errors = $app->session->get('errors', []);
   $page->alerts = $app->session->get('alerts', []);
@@ -22,24 +22,24 @@
   $page->csrfToken = md5(uniqid(rand(), true)); //time();
 
   $app->page = $page;
-  
-  
+
+
 
   // ----------------------
   // -------- MODEL --------
   // ----------------------
-  
+
   DB::connect($app->dbConnection);
-  
+
   include $page->modelFilePath;
   $model = new InvoicesModel();
 
-  
-  
+
+
   // ----------------------
   // -------- POST --------
   // ----------------------
-  
+
   if ($request->method == 'POST')
   {
     do {
@@ -64,20 +64,20 @@
       }
 
     } while (0);
-    
+
     // FLASH Messages
     $app->session->put('errors', $errors);
     $app->session->put('alerts', $alerts);
-    
+
     $response->redirectTo = $request->back ?: $request->uri;
   }
 
 
-  
+
   // ----------------------
   // -------- GET ---------
   // ----------------------
-  
+
   else {
 
     // Get Model
@@ -91,9 +91,9 @@
         array_get($_GET, 'rpp')
       )
     );
-    
+
     $invoices = $pager->rows;
-    
+
     // echo '<pre>', print_r($pager, true), '</pre>';
     // die();
 

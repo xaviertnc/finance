@@ -285,9 +285,9 @@ class DB
   //  ->where('invoice_no', 'LIKE', '%123%', ['ignore' => [null, 0]])
   //  ->get();                                  // Get all with all fields
   //  ->get('id,invoice_no,description');       // Get all with only selected fields
-  //  ->getBy('id', 'invoice_no,description');  // Get all indexed by id and with only selected fields 
+  //  ->getBy('id', 'invoice_no,description');  // Get all indexed by id and with only selected fields
   //  ->getBy('id');                            // Get all indexed by id with all fields
-  //  ->count();                                // Get count only (For pagination) 
+  //  ->count();                                // Get count only (For pagination)
   public static function query($tableName)
   {
     $q = new DbQuery(
@@ -298,11 +298,11 @@ class DB
         {
           case 'count':
             return DB::count($tableName, $whereSql, $whereParams);
-            
-          case 'paginate': 
+
+          case 'paginate':
             // $extraArgs: 0 = page, 1 = rows per page
             return DB::paginate($tableName, $whereSql, $whereParams, $extraArgs[0], $extraArgs[1]);
-            
+
           default:
             return DB::select("$tableName $whereSql", $whereParams);
         }

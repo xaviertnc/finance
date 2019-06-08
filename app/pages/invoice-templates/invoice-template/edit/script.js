@@ -21,5 +21,5 @@ F1.afterPageLoadScripts.push(function initClients()
 		button         :    'btnCal2',     // trigger for the calendar (button ID)
 		align          :    'Bl',          // alignment (defaults to "Bl")
 		singleClick    :    true
-	});  
+	});
 });

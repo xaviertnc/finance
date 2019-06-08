@@ -116,7 +116,7 @@
 
     // Get InvoiceTemplate Items List
     $templateItems = $model->listInvoiceTemplateItems($template_id);
-    
+
     // Get Invoice Totals
     $invoiceTotals = new stdClass();
     $invoiceTotals->subtotal = 0;
@@ -129,7 +129,7 @@
     // Get Products Dropdown List
     $billingPeriodsDropdown = new DropdownSelect(
       'template[billing_period_id]', $model->listBillingPeriods(), $template->billing_period_id, true, true, '- Select Billing Period -');
-      
+
     // Get Products Dropdown List
     $productsDropdown = new DropdownSelect(
       'template-item[product_id]', $model->listProducts(), null, true, true, '- Select Product -');

@@ -1,9 +1,9 @@
 <?php // Invoices Model
 
 class InvoicesModel
-{  
+{
 
-  public function listInvoices($fromDate = null, $toDate = null, 
+  public function listInvoices($fromDate = null, $toDate = null,
     $invNoTerm = null, $descTerm = null, $page = null, $rpp = null)
   {
     return DB::query('invoices')
@@ -13,12 +13,12 @@ class InvoicesModel
       ->orderBy('date desc')
       ->paginate($page?:1, $rpp?:15);
   }
-  
-  
+
+
   public function insertInvoice($invoiceData)
   {
     $ok = DB::insertInto('invoices', $invoiceData);
     return $ok ? DB::lastInsertId() : 0;
   }
-  
+
 }
