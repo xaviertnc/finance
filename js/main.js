@@ -82,7 +82,7 @@ $(document).ready(function start() {
 
   F1.pjax = new F1.Pjax({
     siteName: 'My Finance',
-    busyImageUrl: 'loading.ico',
+    busyFaviconUrl: 'loading.ico',
     csrfTokenMetaName: 'X-CSRF-TOKEN',
     viewports: ['#page-header', '#page-content'],
     afterPageLoadSuccess: function () {
