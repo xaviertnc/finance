@@ -34,7 +34,6 @@ use Exception;
  * OR
  *
  * ->limit($offset, $itemspp)
- * ->paginate($pageno, $itemspp)
  * ->getBy('id', 'name,description');
  * ->get('id,desc');
  *
@@ -161,11 +160,11 @@ class QueryExpression
 
     switch (strtoupper($this->operator))
     {
-      
+
       case 'BETWEEN':
         $params = array_merge($params, $this->rightArg);
         return "$glue ({$this->leftArg} BETWEEN ? AND ?)";
-        
+
       default:
         if (isset($this->rightArg))
         {
@@ -261,9 +260,9 @@ class QueryStatement
    * If $orderBy is an array or multi-array, assume that it contains multiple order statements.
    * The addition of order statements should be handled outside the scope of this class.
    *
-   * @param mixed $orderBy String / Array / Multi-Array. 
+   * @param mixed $orderBy String / Array / Multi-Array.
    *   E.g. $orderBy = 'amount desc' or
-   *        $orderBy = ['amount desc', 'time asc'] or 
+   *        $orderBy = ['amount desc', 'time asc'] or
    *        $orderBy = [['amount'=>'desc'],['time'=>'asc']]
    *
    * @return Statement
@@ -286,6 +285,13 @@ class QueryStatement
 
     $this->orderBy = $orderBy ? ' ORDER BY ' . $orderBy : null;
 
+    return $this;
+  }
+
+
+  public function limit($offset, $itemsPerPage)
+  {
+    $this->limit = " LIMIT $offset,$itemsPerPage";
     return $this;
   }
 
